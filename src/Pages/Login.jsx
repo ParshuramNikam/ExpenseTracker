@@ -9,18 +9,19 @@ const Login = () => {
     return (
         <div class="h-screen flex">
             <div class="hidden md:flex w-1/2 bg-gradient-to-tr from-blue-800 to-purple-700 i justify-around items-center">
-                <div>
+            <div>
                     <div className="text-white flex flex-col items-center justify-start gap-3  lg:mb-5">
                         <img src='/images/icon.png' className='w-20 h-20' />
-                        <p className="text-2xl lg:text-4xl font-bold leading-4 text-white">Expense Tracker</p>
+                        <p className="text-4xl lg:text-5xl font-bold leading-4 text-white">Expense Tracker</p>
                     </div>
                     {/* <h1 class="text-white font-bold text-4xl font-sans">Expense Tracker</h1> */}
-                    <p class="text-white mt-4">Manage Bussiness Expenses Anywhere in Real Time</p>
+                    <p class="text-yellow-300 text-base font-normal mt-5 lg:mt-2">Manage Business Expenses Anywhere in Real-Time</p>
                 </div>
             </div>
             <div class="flex w-full md:w-1/2 justify-center items-center bg-white">
                 <form class="bg-white">
-                    <p class="text-center text-3xl text-blue-800 mb-10">Welcome Back!</p>
+                <p class="text-center text-3xl  text-bold text-indigo-700 mb-2">Welcome back!</p>
+                    <p class="text-center text-sm text-semibold text-gray-700 mb-6">Login to Your Account</p>
                     {/* <h1 class="text-indigo-800 font-bold text-2xl mb-5 text-center">Login</h1> */}
                     <div class="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,7 +44,7 @@ const Login = () => {
                     <br />
                     <div className="text-sm text-center">
                         Don't have a account!&nbsp;
-                        <span className="text-indigo-600"><Link to={'/signup'}>Signup here</Link></span>
+                        <span className="text-indigo-700"><Link to={'/signup'}>Signup here</Link></span>
                     </div>
                 </form>
             </div>

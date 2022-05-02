@@ -12,15 +12,16 @@ const Signup = () => {
                 <div>
                     <div className="text-white flex flex-col items-center justify-start gap-3  lg:mb-5">
                         <img src='/images/icon.png' className='w-20 h-20' />
-                        <p className="text-2xl lg:text-4xl font-bold leading-4 text-white">Expense Tracker</p>
+                        <p className="text-4xl lg:text-5xl font-bold leading-4 text-white">Expense Tracker</p>
                     </div>
                     {/* <h1 class="text-white font-bold text-4xl font-sans">Expense Tracker</h1> */}
-                    <p class="text-white mt-4">Manage Bussiness Expenses Anywhere in Real Time</p>
+                    <p class="text-yellow-300 text-base font-normal mt-5 lg:mt-2">Manage Business Expenses Anywhere in Real-Time</p>
                 </div>
             </div>
             <div class="flex w-full md:w-1/2 justify-center items-center bg-white">
                 <form class="bg-white">
-                    <p class="text-center text-3xl text-bold text-blue-800 mb-10">Signup</p>
+                    <p class="text-center text-3xl  text-bold text-indigo-700 mb-2">Sign up</p>
+                    <p class="text-center text-sm text-semibold text-gray-700 mb-6">Create Your Account</p>
                     {/* <h1 class="text-indigo-800 font-bold text-2xl mb-5 text-center">Login</h1> */}
                     <div class="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +51,7 @@ const Signup = () => {
                     <br />
                     <div className="text-sm text-center">
                         Already have a account!&nbsp;
-                        <span className="text-indigo-600"><Link to={'/login'}>Login here</Link></span>
+                        <span className="text-indigo-700"><Link to={'/login'}>Login here</Link></span>
                     </div>
                 </form>
             </div>
