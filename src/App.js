@@ -1,24 +1,32 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import Navbar from './components/Navbar';
+import HomePage from './Pages/HomePage';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom"; import BussinessExpenses from './Pages/BussinessExpenses';
+import Rents from './Pages/Rents';
+import PersonalExpenses from './Pages/PersonalExpenses';
+import Login from './Pages/Login';
+import Signup from './Pages/Signup';
+;
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" exact element={<HomePage />} />
+        <Route path="/login" exact element={<Login />} />
+        <Route path="/signup" exact element={<Signup />} />
+        <Route path="personal" exact element={<PersonalExpenses />} />
+        <Route path="bussiness" exact element={<BussinessExpenses />} />
+        <Route path="rents" exact element={<Rents />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
