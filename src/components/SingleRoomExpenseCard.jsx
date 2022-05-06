@@ -27,10 +27,10 @@ function SingleRoomExpenseCard() {
         <input type="number" placeholder="Enter Year"></input>
        
       </div>
-      <div className="flex border-t-4 border-red-500 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
+      <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
         <div>
           <div className="flex justify-between">
-            <h1 className="w-min p-2 text-red-500  bg-red-100 rounded-lg text-base font-semibold">
+            <h1 className="w-min p-2 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
               Room 1
             </h1>
             <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
