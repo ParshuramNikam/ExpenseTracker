@@ -17,7 +17,7 @@ const BussinessExpenses = ({ user }) => {
   return (
     <div className="bg-gray-200 min-h-screen">
       <h1 className="text-2xl md:text-3xl text-black  pt-3 ml-3 mb-0 font-bold">
-        Personal Expenses
+        Bussiness Expenses
       </h1>
       <div className="m-2 mb-0 md:flex justify-between">
         <div className="flex md:w-max items-center gap-1.5 my-4">

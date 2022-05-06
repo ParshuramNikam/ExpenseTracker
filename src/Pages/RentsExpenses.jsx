@@ -18,7 +18,7 @@ const RentsExpenses = ({ user }) => {
   return (
     <div className="bg-gray-200 min-h-screen">
       <h1 className="text-2xl md:text-3xl text-black  pt-3 ml-3 mb-0 font-bold">
-        Personal Expenses
+        Room Rent Expenses
       </h1>
       <div className="m-2 mb-0 md:flex justify-between">
         <div className="flex md:w-max items-center gap-1.5 my-4">
@@ -30,7 +30,7 @@ const RentsExpenses = ({ user }) => {
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
                         </svg> */}
           <p className="text-black font-normal text-xl ml-2">Welcome back,</p>
-          <h3 className="whitespace-nowrap text-red-500 font-semibold  text-xl">
+          <h3 className="whitespace-nowrap text-green-600 font-semibold  text-xl">
             Jhon Doe
           </h3>
         </div>
@@ -38,7 +38,7 @@ const RentsExpenses = ({ user }) => {
         {!isOpen && (
           <div className="mt-2 ">
             <button
-              className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
+              className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
               onClick={onOpenModal}
               type="button"
             >
@@ -54,7 +54,7 @@ const RentsExpenses = ({ user }) => {
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-base md:text-lg ">Add Rent Details</p>
+              <p className="text-base md:text-lg ">Add New Room</p>
             </button>
           </div>
         )}
@@ -69,40 +69,35 @@ const RentsExpenses = ({ user }) => {
         >
           <form className=" bg-gray-100 rounded mt-1 p-2">
             <h3 className="text-center text-xl text-black font-semibold">
-              ADD RENT DETAILS
+              ADD ROOM DETAILS
             </h3>
             <input
               type="text"
-              name="expense"
-              id="expense"
-              placeholder="Enter Expense"
+              name="room_name"
+              id="room_name"
+              placeholder="Room Name"
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
             />
-            <textarea
+            <input
               type="text"
-              rows="3"
-              name="expense_details"
-              id="expense_details"
-              placeholder="Enter Expense Details"
-              className="mt-2 w-full border-2  rounded-3xl p-1 pl-4 outline-none border-gray-400 placeholder-black"
-            ></textarea>
-
+              name="room_location"
+              id="room_location"
+              placeholder="Room Location"
+              className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
+            />
+            <input
+              type="text"
+              name="tenant_name"
+              id="tenant_name"
+              placeholder="Tenant Name"
+              className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
+            />
             <input
               type="number"
-              name="expense_details"
-              id="expense_details"
-              placeholder="Expense Amount"
+              name="rent"
+              id="rent"
+              placeholder="&#8377; Rent Amount"
               className="mt-2 w-full border-2 rounded-3xl placeholder-black p-1 pl-4 outline-none border-gray-400"
-            />
-
-            <input
-              type="date"
-              className="mt-2 w-full  border-2 rounded-3xl p-1 pl-4 outline-none border-gray-400"
-            />
-
-            <input
-              type="time"
-              className="mt-2 w-full  border-2 rounded-3xl p-1 pl-4 outline-none border-gray-400"
             />
 
             <div className="flex flex-col">
@@ -208,7 +203,11 @@ const RentsExpenses = ({ user }) => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2  xl:grid-cols-4">
+        <RentExpenseCard />
+        <RentExpenseCard />
+        <RentExpenseCard />
+
         <RentExpenseCard />
         <RentExpenseCard />
         <RentExpenseCard />
