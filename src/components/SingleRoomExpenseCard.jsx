@@ -25,14 +25,7 @@ function SingleRoomExpenseCard() {
           Choose Year:
         </label>
         <input type="number" placeholder="Enter Year"></input>
-        <div class="p-10">
-          <p class="mb-4 text-gray-600 text-center">
-            Simple search for capturing user input.
-          </p>
-          <div class="md:w-1/2 lg:w-1/3 m-auto border shadow">
-            <div id="app" class="bg-gray-200 p-10"></div>
-          </div>
-        </div>
+       
       </div>
       <div className="flex border-t-4 border-red-500 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
         <div>
