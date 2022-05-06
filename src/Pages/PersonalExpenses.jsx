@@ -1,12 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ExpenseCard from '../components/ExpenseCard'
 import PersonalExpenseCard from '../components/PersonalExpenseCard'
-import "react-responsive-modal/styles.css";
-import { Modal } from "react-responsive-modal";
 
 
-
-const PersonalExpenses = () => {
+const PersonalExpenses = ({ user }) => {
     let [isOpen, setIsOpen] = useState(false)
 
     function onCloseModal() {
@@ -17,9 +14,11 @@ const PersonalExpenses = () => {
         setIsOpen(true)
     }
 
+
+
     return (
         <>
-            <div className='bg-gray-100'>
+            <div className='bg-gray-100 min-h-screen'>
                 <h1 className='text-2xl md:text-3xl text-black  pt-3 ml-3 mb-0 font-bold'>Personal Expenses</h1>
                 <div className='m-2 mb-5 md:flex justify-between'>
                     <div className='flex md:w-max items-center gap-1.5 my-4'>
@@ -37,60 +36,62 @@ const PersonalExpenses = () => {
                     {
                         !isOpen &&
                         <div className='mt-2 '>
-                        <button className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
-                            onClick={onOpenModal} type="button"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2 " viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                            </svg>
-                            <p className='text-lg '>Add New Expense</p>
-                        </button>
+                            <button className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
+                                onClick={onOpenModal} type="button"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2 " viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                                </svg>
+                                <p className='text-sm sm:text-base md:text-lg '>Add New Expense</p>
+                            </button>
                         </div>
                     }
 
                 </div>
 
                 {/*  show hide to add new expense */}
-                <div className={`${!isOpen && 'hidden'} transition delay-150 duration-300 ease-in-out  my-4 mx-2`}>
-                    <h3 className='text-center text-lg text-red-500 font-semibold'>Add new expense</h3>
-                    <form className="border-2 shadow-md border-red-500 rounded-lg mt-1 p-2">
-                        <input type="text" name="expense_details" id="expense_details"
-                            placeholder='Enter expense details'
-                            className='w-full border-2 rounded-md p-1 outline-none border-gray-900'
-                        />
+                <div className="flex justify-center mb-5">
+                    <div className={`${!isOpen && 'hidden'} max-w-xl mx-auto transition delay-150 duration-300 ease-in-out  my-4 mx-2`}>
+                        <h3 className='text-center text-lg text-red-500 font-semibold'>Add new expense</h3>
+                        <form className="border-2 shadow-md border-red-500 rounded-lg mt-1 p-2">
+                            <input type="text" name="expense_details" id="expense_details"
+                                placeholder='Enter expense details'
+                                className='w-full border-2 rounded-md p-1 outline-none border-gray-900'
+                            />
 
-                        <input type="number" name="expense_details" id="expense_details"
-                            placeholder='Expense amount'
-                            className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900'
-                        />
+                            <input type="number" name="expense_details" id="expense_details"
+                                placeholder='Expense amount'
+                                className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900'
+                            />
 
-                        <input type="date" className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900' />
+                            <input type="date" className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900' />
 
-                        <input type="time" className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900' />
+                            <input type="time" className='mt-2 w-full border-2 rounded-md p-1 outline-none border-gray-900' />
 
-                        <div className="flex">
-                            <button type='button'
-                                onClick={() => alert("Code required!")}
-                                className='mx-auto mt-3 rounded-lg border-2 border-blue-800 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap bg-blue-200 text-blue-800'
-                            >
-                                Add&nbsp;
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                            </button>
+                            <div className="flex">
+                                <button type='button'
+                                    onClick={() => alert("Code required!")}
+                                    className='mx-auto mt-3 rounded-lg border-2 border-blue-800 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap bg-blue-200 text-blue-800'
+                                >
+                                    Add&nbsp;
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
 
-                            <button type='button'
-                                onClick={onCloseModal}
-                                className='mx-auto mt-3 rounded-lg border-2 border-red-800 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap bg-red-200 text-red-800'
-                            >
-                                Close&nbsp;
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                                <button type='button'
+                                    onClick={onCloseModal}
+                                    className='mx-auto mt-3 rounded-lg border-2 border-red-800 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap bg-red-200 text-red-800'
+                                >
+                                    Close&nbsp;
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                    </form>
+                        </form>
+                    </div>
                 </div>
 
                 <div className='border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black'>
@@ -106,10 +107,19 @@ const PersonalExpenses = () => {
                     {/* Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia tenetur nemo voluptates facere amet non laboriosam accusantium labore nisi voluptas. */}
                 </div>
 
-                <PersonalExpenseCard />
-                <PersonalExpenseCard />
-                <PersonalExpenseCard />
-                <PersonalExpenseCard />
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'>
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+                    <PersonalExpenseCard />
+                </div>
 
             </div>
 

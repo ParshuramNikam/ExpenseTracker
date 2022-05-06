@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import HomePage from './Pages/HomePage';
@@ -7,14 +7,50 @@ import {
   Routes,
   Route,
 } from "react-router-dom"; import BussinessExpenses from './Pages/BussinessExpenses';
-import Rents from './Pages/Rents';
 import PersonalExpenses from './Pages/PersonalExpenses';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
-;
+import RentsExpenses from './Pages/RentsExpenses';
+import SingleRoomAllRentDetails from './Pages/SingleRoomAllRentDetails';
+import { auth } from './database/firebase.config';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+
+  const [user, setUser] = useState({
+    uid: "",
+    username: "",
+    email: ""
+  })
+
+
+  useEffect(() => {
+    // console.log(localStorage.getItem('expense-tracker-user-id'));
+
+    auth.onAuthStateChanged(function (currentUser) {
+      if (currentUser) {
+        console.log(">>>>>>>>>>>>> ", currentUser);
+        console.log("logged in currentUser id :", currentUser.uid);
+
+        setUser({
+          uid: currentUser.uid,
+          username: currentUser.displayName,
+          email: currentUser.email
+        })
+      } else {
+        console.log("<<<< User is signed out.");
+
+        auth.signOut().then(() => {
+          console.log("Signout Successful");
+        }).then(() => {
+          console.log("Done.... User registred succesfully");
+          alert("Signup succesful! & Logout succesful");
+        }).catch((error) => {
+          console.log(error.message);
+        });
+      }
+    });
+  }, [])
+
 
   return (
     <BrowserRouter>
@@ -22,9 +58,10 @@ function App() {
         <Route path="/" exact element={<HomePage />} />
         <Route path="/login" exact element={<Login />} />
         <Route path="/signup" exact element={<Signup />} />
-        <Route path="personal" exact element={<PersonalExpenses />} />
-        <Route path="bussiness" exact element={<BussinessExpenses />} />
-        <Route path="rents" exact element={<Rents />} />
+        <Route path="personal" exact element={<PersonalExpenses user={user} />} />
+        <Route path="bussiness" exact element={<BussinessExpenses user={user} />} />
+        <Route path="rents" exact element={<RentsExpenses user={user} />} />
+        <Route path="rents/:roomId" exact element={<SingleRoomAllRentDetails user={user} />} />
       </Routes>
     </BrowserRouter>
   );

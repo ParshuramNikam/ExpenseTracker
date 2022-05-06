@@ -24,7 +24,7 @@ const HomePage = () => {
                     </div>
                 </Link>
                 <Link to={'/rents'}>
-                    <div role="listitem" className="bg-teal-400 cursor-pointer shadow rounded-lg mt-3 flex relative z-30">
+                    <div role="listitem" className="bg-emerald-400 cursor-pointer shadow rounded-lg mt-3 flex relative z-30">
                         <div className="w-full p-8">
                             <div className="md:flex items-center justify-between">
                                 <h2 className="text-2xl sm:text-3xl font-semibold leading-6 text-white">Room Rents</h2>

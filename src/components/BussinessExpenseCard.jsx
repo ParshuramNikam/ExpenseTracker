@@ -1,11 +1,11 @@
 import React from "react";
 
-const PersonalExpenseCard = () => {
+const BussinessExpenseCard = () => {
   return (
     <div>
-      <div className="sm:flex border-t-4 border-red-500 justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
+      <div className="flex border-t-4 border-purple-500 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
         <div>
-          <h1 className="w-min p-2 text-red-500  bg-red-100 rounded-lg mb-2 text-xs sm:text-base font-semibold">
+          <h1 className="w-min p-2 text-purple-500  bg-purple-100 rounded-lg text-base font-semibold">
             Management
           </h1>
           <div className="font-semibold text-black">
@@ -25,4 +25,4 @@ const PersonalExpenseCard = () => {
   );
 };
 
-export default PersonalExpenseCard;
+export default BussinessExpenseCard;
