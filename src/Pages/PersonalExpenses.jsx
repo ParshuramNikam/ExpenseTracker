@@ -25,7 +25,7 @@ const PersonalExpenses = ({ user }) => {
 
   useEffect(() => {
 
-    db.collection('PersonalExpense').where("addedBy", "==", "92TKdIqycTVA67lv2RqGJDqdHEp1").get().then(snapshot => {
+    db.collection('PersonalExpense').where("addedBy", "==", user.uid).get().then(snapshot => {
       setLoading(true);
       setExpenseData([])
       snapshot.docs.forEach(doc => {
@@ -249,6 +249,11 @@ const PersonalExpenses = ({ user }) => {
               </svg>
               <div className="font-bold text-2xl">Loading...</div>
             </div> : null
+        }
+        {
+          !loading && expenseData.length === 0 && <div className="text-2xl text-center font-bold text-red-600">
+            NO EXPENSE RECORD
+          </div>
         }
       </div>
     </>
