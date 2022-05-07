@@ -13,7 +13,7 @@ const PersonalExpenseCard = ({ data, index }) => {
               &#8377; {data.expenseDetails.expenseAmount}
             </div>
           </div>
-          <div className="font-semibold text-black">
+          <div className="font-semibold text-black break-words">
             {data.expenseDetails.desc}
           </div>
           <div className="mt-4 text-sm font-normal text-gray-700">
