@@ -1,6 +1,9 @@
+// parshu
 import firebase from 'firebase';
-import "firebase/storage"
+import "firebase/storage";
 
+// deep
+// import firebase from 'firebase/compat/app';
 // import 'firebase/compat/auth';
 // import 'firebase/compat/firestore';
 

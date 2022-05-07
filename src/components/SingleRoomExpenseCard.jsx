@@ -21,7 +21,7 @@ function SingleRoomExpenseCard() {
   return (
     <div>
       <div className="mx-2">
-        <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2 grid grid-cols-1 sm:grid-cols-2">
+        <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2 grid grid-cols-1 md:grid-cols-2">
           <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
             <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
               <div className="flex items-center text-lg">
