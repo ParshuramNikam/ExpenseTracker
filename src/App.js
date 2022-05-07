@@ -12,7 +12,8 @@ import Login from './Pages/Login';
 import Signup from './Pages/Signup';
 import RentsExpenses from './Pages/RentsExpenses';
 import SingleRoomAllRentDetails from './Pages/SingleRoomAllRentDetails';
-import { auth } from './database/firebase.config';
+import app, { auth, db } from './database/firebase.config';
+import firebase from 'firebase';
 
 function App() {
 
@@ -25,7 +26,6 @@ function App() {
 
   useEffect(() => {
     // console.log(localStorage.getItem('expense-tracker-user-id'));
-
     auth.onAuthStateChanged(function (currentUser) {
       if (currentUser) {
         console.log(">>>>>>>>>>>>> ", currentUser);
@@ -49,6 +49,23 @@ function App() {
         });
       }
     });
+
+    // if (user.uid) {
+    //   db.collection('Users').doc().set({
+    //     addedBy: user.uid,
+    //     expenseTitle: "My Expense",
+    //     expenseAmount: 5000,
+    //     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    //     timestamp: `${new Date().toLocaleDateString()} | ${new Date().toLocaleTimeString()}`
+    //   })
+    //     .then(() => {
+    //       console.log("Document successfully written!");
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error writing document: ", error);
+    //     });
+    // }
+
   }, [])
 
 
