@@ -3,10 +3,14 @@ import ExpenseCard from "../components/ExpenseCard";
 import PersonalExpenseCard from "../components/PersonalExpenseCard";
 import { db } from "../database/firebase.config";
 import firebase from "firebase";
+import monthArray from '../utils/MonthArray';
+import MonthArray from "../utils/MonthArray";
 
 const PersonalExpenses = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
   const [inProcess, setInProcess] = useState(false);
+
+  const [allData, setAllData] = useState([]);
 
   const [fetchData, setFetchData] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -19,12 +23,32 @@ const PersonalExpenses = ({ user }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
+  const [month, setMonth] = useState(monthArray[new Date().getMonth()]);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [day, setDay] = useState(new Date().getDay() + 1);
+
   function onCloseModal() {
     setIsOpen(false);
   }
 
-  useEffect(() => {
+  const getMonthNumber = (inputMonth) => {
+    if (MonthArray.indexOf(inputMonth) + 1 < 10) {
+      const no = MonthArray.indexOf(inputMonth) + 1;
+      return '0' + no;
+    } else {
+      return MonthArray.indexOf(inputMonth) + 1;
+    }
+  }
 
+  const formatDay = (inputDay) => {
+    if (inputDay < 10) {
+      return '0' + inputDay;
+    } else {
+      return inputDay;
+    }
+  }
+
+  const fetchDataFromDB = () => {
     db.collection('PersonalExpense').where("addedBy", "==", user.uid).get().then(snapshot => {
       setLoading(true);
       setExpenseData([])
@@ -35,15 +59,35 @@ const PersonalExpenses = ({ user }) => {
           { expenseId: doc.id, expenseDetails: doc.data() },
         ]);
       })
-    }).then(() => { console.log("success"); setLoading(false); })
+    }).then(() => { setAllData(expenseData); console.log("success"); setLoading(false); })
       .catch((err) => { console.log(err.message); setLoading(false); })
+  }
 
-  }, [fetchData])
+  const fetchDataByFilter = async () => {
+    console.log("Filter by : " + year + '-' + getMonthNumber(month) + '-' + formatDay(day));
+    // let result;
+    // await allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+    setExpenseData(
+      allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+      // allData.filter(data => data.expenseDetails.expenseAmount === 15)
+    )
+    console.log(
+      allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+    );
+
+    // setExpenseData(result);
+  }
+
+  useEffect(() => {
+    setMonth(monthArray[new Date().getMonth()]);
+    fetchDataFromDB();
+  }, [fetchData, user])
 
 
   function onOpenModal() {
     setIsOpen(true);
   }
+
 
   const addPersonalExpenseInDB = () => {
     setInProcess(true);
@@ -53,7 +97,8 @@ const PersonalExpenses = ({ user }) => {
       desc: desc,
       expenseAmount: parseInt(amount),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      timestamp: `${date} | ${time}`
+      date: date,
+      time: time
     })
       .then(() => {
         console.log("Document successfully added to personal expense!");
@@ -62,6 +107,7 @@ const PersonalExpenses = ({ user }) => {
         alert("Personal expense added succesfully!")
         setTimeout(() => {
           setInProcess(false);
+          fetchDataFromDB();
         }, 1000);
       })
       .catch((error) => {
@@ -80,7 +126,7 @@ const PersonalExpenses = ({ user }) => {
           <div className="flex md:w-max items-center gap-1.5 my-4">
             <p className="text-black font-normal text-xl ml-2">Welcome back,</p>
             <h3 className="whitespace-nowrap text-red-500 font-semibold  text-xl">
-              Jhon Doe
+              {user.username}
             </h3>
           </div>
 
@@ -231,6 +277,75 @@ const PersonalExpenses = ({ user }) => {
             </div>
           </div>
           {/* Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia tenetur nemo voluptates facere amet non laboriosam accusantium labore nisi voluptas. */}
+        </div>
+
+        <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
+          <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
+            <div className="flex items-center text-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+              Apply filter :
+            </div>
+            <button className="text-right shadow-lg md:w-auto md:mx-0  bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
+              onClick={fetchDataByFilter}
+            >
+              Search
+            </button>
+          </div>
+          <div className="mb-2">
+            <div className="mb-2">
+              <label className="font-semibold mr-2" htmlFor="year" >
+                Choose Day:
+              </label>
+              <input type="number" name="day" id="day" placeholder="Enter Year"
+                className="p-1 border-2 rounded text-gray-800 border-gray-800"
+                value={day} onChange={(e) => setDay(e.target.value)}
+              />
+            </div>
+
+            <label htmlFor="month" className="font-semibold mr-2">Choose month:</label>
+            <select name="month" id="month" className="px-2 py-1 border-2 rounded text-gray-800 border-gray-800 cursor-pointer"
+              value={month} onChange={(e) => setMonth(e.target.value)}
+            >
+              <option value="jan" className="p-1 text-emerald-600">Jan</option>
+              <option value="feb" className="p-1 text-emerald-600">Feb</option>
+              <option value="mar" className="p-1 text-emerald-600">Mar</option>
+              <option value="apr" className="p-1 text-emerald-600">Apr</option>
+              <option value="may" className="p-1 text-emerald-600">May</option>
+              <option value="jun" className="p-1 text-emerald-600">Jun</option>
+              <option value="jul" className="p-1 text-emerald-600">Jul</option>
+              <option value="aug" className="p-1 text-emerald-600">Aug</option>
+              <option value="sep" className="p-1 text-emerald-600">Sep</option>
+              <option value="oct" className="p-1 text-emerald-600">Oct</option>
+              <option value="nov" className="p-1 text-emerald-600">Nov</option>
+              <option value="dec" className="p-1 text-emerald-600">Dec</option>
+            </select>
+          </div>
+          <div className="mb-2">
+            <label className="font-semibold mr-2" htmlFor="year" >
+              Choose Year:
+            </label>
+            <input type="number" name="year" id="year" placeholder="Enter Year"
+              className="p-1 border-2 rounded text-gray-800 border-gray-800"
+              value={year} onChange={(e) => setYear(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="px-4 mt-3">
+          <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
+        </div>
+
+        <div className="flex justify-center mb-2">
+          <button className="flex justify-center items-center gap-x-2 gap-y-1 text-center shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-5 py-3 rounded-lg"
+            onClick={fetchDataFromDB}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+            <div>Get All Time Rent Details</div>
+          </button>
         </div>
 
         <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">

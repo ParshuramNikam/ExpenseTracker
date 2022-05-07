@@ -30,16 +30,9 @@ const RentsExpenses = ({ user }) => {
       </h1>
       <div className="m-2 mb-0 md:flex justify-between">
         <div className="flex md:w-max items-center gap-1.5 my-4">
-          {/* <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"
-                        alt='Profile Pic'
-                        className='w-10 h-10 rounded-full'
-                    /> */}
-          {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
-                        </svg> */}
           <p className="text-black font-normal text-xl ml-2">Welcome back,</p>
           <h3 className="whitespace-nowrap text-green-600 font-semibold  text-xl">
-            Jhon Doe
+          {user.username}
           </h3>
         </div>
 

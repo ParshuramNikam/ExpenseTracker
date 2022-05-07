@@ -20,7 +20,7 @@ const PersonalExpenseCard = ({ data, index }) => {
             {" "}
             {/* <span className="whitespace-nowrap">{data.expenseDetails.title}</span> |{" "}
             <span className="whitespace-nowrap">{data.expenseDetails.title}</span> */}
-            {data.expenseDetails.timestamp}
+            {data.expenseDetails.date} | {data.expenseDetails.time}
           </div>
         </div>
       </div>
