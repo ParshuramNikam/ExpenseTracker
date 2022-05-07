@@ -32,6 +32,8 @@ const SingleRoomAllRentDetails = ({ user }) => {
           </h3>
         </div>
 
+
+
         {!isOpen && (
           <div className="mt-2 ">
             <button
@@ -51,18 +53,24 @@ const SingleRoomAllRentDetails = ({ user }) => {
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-base md:text-lg ">Add New Room</p>
+              <p className="text-base md:text-lg ">Add Rent Entry</p>
             </button>
           </div>
         )}
       </div>
 
+      <div className="font-bold text-xl text-green-900 my-1 flex items-center justify-center gap-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+        </svg>
+        <div>Room Name : <span>{"Room 1"}</span></div>
+      </div>
+
       {/*  show hide to add new expense */}
-      <div className="flex justify-center mb-5 ">
+      <div className="flex justify-center  ">
         <div
-          className={`${
-            !isOpen && "hidden "
-          } max-w-xl  transition delay-150 duration-300 ease-in-out  mb-4 mx-2`}
+          className={`${!isOpen && "hidden"
+            } max-w-xl  mb-5 transition delay-150 duration-300 ease-in-out  mx-2`}
         >
           <form className=" bg-gray-100 rounded mt-1 p-2">
             <h3 className="text-center text-xl text-black font-semibold">
@@ -143,7 +151,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
       </div>
 
       <div className="flex flex-col sm:flex-row">
-        <div className="border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
+        <div className="border-2 w-max mx-auto mb-1 sm:mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div className="flex">
             <div>
               <svg
@@ -163,7 +171,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="flex flex-col">
               <div className="font-medium text-xl text-green-600">
-                Paid Rent Total
+                Paid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
                 &#8377; 20,000
@@ -171,7 +179,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
           </div>
         </div>
-        <div className="border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
+        <div className="border-2 w-max mx-auto mb-1 sm:mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div className="flex">
             <div>
               <svg
@@ -191,7 +199,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="flex flex-col">
               <div className="font-medium text-xl text-red-600">
-                Unpaid Rent Total
+                Unpaid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
                 &#8377; 20,000
@@ -199,12 +207,15 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+
+
+
       <div className="">
         <SingleRoomExpenseCard />
-       
+
       </div>
-    </div>
+    </div >
   );
 };
 

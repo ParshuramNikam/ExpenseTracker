@@ -168,7 +168,7 @@ const PersonalExpenses = ({ user }) => {
           </div>
           <div className="flex flex-col">
             <div className="font-medium text-xl text-gray-600">
-              Your Total Expenses
+              Total Expenses
             </div>
             <div className="flex self-center text-2xl font-semibold">
               &#8377; 20,000

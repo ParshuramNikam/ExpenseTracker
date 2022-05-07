@@ -3,6 +3,7 @@ import BussinessExpenseCard from "../components/BussinessExpenseCard";
 import ExpenseCard from "../components/ExpenseCard";
 import PersonalExpenseCard from "../components/PersonalExpenseCard";
 import RentExpenseCard from "../components/RentExpenseCard";
+import MonthArray from "../utils/MonthArray";
 
 const RentsExpenses = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,13 @@ const RentsExpenses = ({ user }) => {
 
   function onOpenModal() {
     setIsOpen(true);
+  }
+
+  const addMonthsForEachRoom = (e) => {
+    const ans = prompt("Are you sure? Do you want to add Rooms. Type 'yes' if you want to add");
+    if (ans && ans.toLowerCase().replace(/ /g,'') === 'yes') {
+      alert("Do code here!")
+    }
   }
 
   return (
@@ -63,9 +71,8 @@ const RentsExpenses = ({ user }) => {
       {/*  show hide to add new expense */}
       <div className="flex justify-center mb-5 ">
         <div
-          className={`${
-            !isOpen && "hidden "
-          } max-w-xl  transition delay-150 duration-300 ease-in-out  mb-4 mx-2`}
+          className={`${!isOpen && "hidden "
+            } max-w-xl  transition delay-150 duration-300 ease-in-out  mb-4 mx-2`}
         >
           <form className=" bg-gray-100 rounded mt-1 p-2">
             <h3 className="text-center text-xl text-black font-semibold">
@@ -166,7 +173,7 @@ const RentsExpenses = ({ user }) => {
             </div>
             <div className="flex flex-col">
               <div className="font-medium text-xl text-green-600">
-                Paid Rent Total
+                Paid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
                 &#8377; 20,000
@@ -194,7 +201,7 @@ const RentsExpenses = ({ user }) => {
             </div>
             <div className="flex flex-col">
               <div className="font-medium text-xl text-red-600">
-                Unpaid Rent Total
+                Unpaid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
                 &#8377; 20,000
@@ -203,6 +210,28 @@ const RentsExpenses = ({ user }) => {
           </div>
         </div>
       </div>
+
+      <div className="px-4 mb-3">
+        <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
+      </div>
+
+      <div className="flex justify-center mb-2 mx-2">
+        <button className="flex gap-2 justify-center items-center  text-lg bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md"
+          onClick={addMonthsForEachRoom}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+          </svg>
+          <div>
+            Add new month entries for each room
+          </div>
+        </button>
+      </div>
+
+      <div className="font-semibold text-lg mx-2 rounded w-max px-4 py-1 mb-2 bg-green-100 text-green-600 border-2 border-green-600">
+        Current Month : {MonthArray[new Date().getMonth()].toString().toUpperCase()} 
+      </div>
+
       <div className="grid grid-cols-2  xl:grid-cols-4">
         <RentExpenseCard />
         <RentExpenseCard />
