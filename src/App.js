@@ -13,6 +13,7 @@ import Signup from './Pages/Signup';
 import RentsExpenses from './Pages/RentsExpenses';
 import SingleRoomAllRentDetails from './Pages/SingleRoomAllRentDetails';
 import { auth } from './database/firebase.config';
+import SingleSiteExpenseDetails from './Pages/SingleSiteExpenseDetails';
 
 function App() {
 
@@ -60,6 +61,7 @@ function App() {
         <Route path="/signup" exact element={<Signup />} />
         <Route path="personal" exact element={<PersonalExpenses user={user} />} />
         <Route path="bussiness" exact element={<BussinessExpenses user={user} />} />
+        <Route path="sites/:siteId" exact element={<SingleSiteExpenseDetails user={user} />} />
         <Route path="rents" exact element={<RentsExpenses user={user} />} />
         <Route path="rents/:roomId" exact element={<SingleRoomAllRentDetails user={user} />} />
       </Routes>

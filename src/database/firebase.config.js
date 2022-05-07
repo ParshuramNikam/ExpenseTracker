@@ -1,6 +1,10 @@
-import firebase from 'firebase';
-// import 'firebase/compat/auth';
-// import 'firebase/compat/firestore';
+// parshu
+// import firebase from 'firebase';
+
+// deep
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
