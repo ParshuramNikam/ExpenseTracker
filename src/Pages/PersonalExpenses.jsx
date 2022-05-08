@@ -10,12 +10,13 @@ const PersonalExpenses = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
   const [inProcess, setInProcess] = useState(false);
 
-  const [allData, setAllData] = useState([]);
 
   const [fetchData, setFetchData] = useState(true);
   const [loading, setLoading] = useState(true);
 
+  const [allData, setAllData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
+  const [expenseTotal, setExpenseTotal] = useState(0);
 
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -29,6 +30,14 @@ const PersonalExpenses = ({ user }) => {
 
   function onCloseModal() {
     setIsOpen(false);
+  }
+
+  const calculateExpense = async () => {
+    setExpenseTotal(0);
+    await expenseData.map(expense => {
+      console.log("^^^^^^" + parseInt(expenseTotal + expense.expenseDetails.expenseAmount));
+      setExpenseTotal(prevTotal => prevTotal + expense.expenseDetails.expenseAmount)
+    })
   }
 
   const getMonthNumber = (inputMonth) => {
@@ -59,18 +68,36 @@ const PersonalExpenses = ({ user }) => {
           { expenseId: doc.id, expenseDetails: doc.data() },
         ]);
       })
-    }).then(() => { setAllData(expenseData); console.log("success"); setLoading(false); })
+    }).then(() => {
+      console.log("success");
+      setAllData(expenseData);
+      setLoading(false);
+    })
+      // .then(() => {
+      //   calculateExpense().then(expense_total_amount => setExpenseTotal(expense_total_amount))
+      // })
       .catch((err) => { console.log(err.message); setLoading(false); })
+  }
+
+  const setFilteredExpenseInData = async () => {
+    await setExpenseData(
+      allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+    )
+    return true
   }
 
   const fetchDataByFilter = async () => {
     console.log("Filter by : " + year + '-' + getMonthNumber(month) + '-' + formatDay(day));
-    // let result;
-    // await allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
-    setExpenseData(
-      allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
-      // allData.filter(data => data.expenseDetails.expenseAmount === 15)
-    )
+
+    await setFilteredExpenseInData()
+    // .then(() => {
+    //   // setTimeout(() => {
+    //   calculateExpense().then(expense_total_amount => setExpenseTotal(expense_total_amount))
+    //   // calculateExpense();
+    //   // calculateExpense();
+    //   // }, 1000);
+    // })
+
     console.log(
       allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
     );
@@ -251,32 +278,43 @@ const PersonalExpenses = ({ user }) => {
           </div>
         </div>
 
-        <div className="border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-gray-900 h-12 w-12 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
+        <div className="border-2 w-max mx-auto mb-5  gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
+          <div className="flex items-center">
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-gray-900 h-12 w-12 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <div className="font-medium text-xl text-gray-600">
+                Total Expenses
+              </div>
+              <div className="flex self-center text-2xl font-semibold">
+                &#8377; {expenseTotal}
+              </div>
+            </div>
+          </div>
+          <div className="max-w-max mx-auto mt-1">
+            <button className="flex gap-x-2 justify-center items-center bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md"
+              onClick={calculateExpense}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <div className="font-semibold text-lg">Refresh</div>
+            </button>
           </div>
-          <div className="flex flex-col">
-            <div className="font-medium text-xl text-gray-600">
-              Total Expenses
-            </div>
-            <div className="flex self-center text-2xl font-semibold">
-              &#8377; 20,000
-            </div>
-          </div>
-          {/* Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia tenetur nemo voluptates facere amet non laboriosam accusantium labore nisi voluptas. */}
         </div>
 
         <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
@@ -348,7 +386,7 @@ const PersonalExpenses = ({ user }) => {
           </button>
         </div>
 
-        <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 pb-5">
           {
             !loading && expenseData.map(function (data, index) {
               return <PersonalExpenseCard key={index} data={data} index={index} />

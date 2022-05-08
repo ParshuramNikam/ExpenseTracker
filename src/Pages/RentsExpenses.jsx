@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BussinessExpenseCard from "../components/BussinessExpenseCard";
 import ExpenseCard from "../components/ExpenseCard";
 import PersonalExpenseCard from "../components/PersonalExpenseCard";
 import RentExpenseCard from "../components/RentExpenseCard";
 import MonthArray from "../utils/MonthArray";
+import firebase from "firebase";
+import { db } from "../database/firebase.config";
 
 const RentsExpenses = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
+  const [inProcess, setInProcess] = useState(false);
+
+  const [fetchData, setFetchData] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const [allData, setAllData] = useState([]);
+  const [expenseData, setExpenseData] = useState([]);
+  const [expenseTotal, setExpenseTotal] = useState(0);
+
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
+  const [tenantName, setTenantName] = useState("");
+  const [rentAmount, setRentAmount] = useState("");
 
   function onCloseModal() {
     setIsOpen(false);
@@ -18,10 +33,62 @@ const RentsExpenses = ({ user }) => {
 
   const addMonthsForEachRoom = (e) => {
     const ans = prompt("Are you sure? Do you want to add Rooms. Type 'yes' if you want to add");
-    if (ans && ans.toLowerCase().replace(/ /g,'') === 'yes') {
+    if (ans && ans.toLowerCase().replace(/ /g, '') === 'yes') {
       alert("Do code here!")
     }
   }
+
+  const addNewRoomInDB = () => {
+    setInProcess(true);
+    db.collection('RoomsDetails').doc().set({
+      addedBy: user.uid,
+      name: name,
+      location: location,
+      tenantName: tenantName,
+      rentAmount: parseInt(rentAmount),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+      .then(() => {
+        console.log("Document successfully added to personal expense!");
+        setName(""); setLocation(""); setTenantName(""); setRentAmount("");
+        setIsOpen(false);
+        alert("New Room added succesfully!")
+        setTimeout(() => {
+          setInProcess(false);
+          fetchDataFromDB();
+        }, 1000);
+      })
+      .catch((error) => {
+        setInProcess(false);
+        console.error("Error writing document: ", error);
+      });
+  }
+
+  const fetchDataFromDB = () => {
+    db.collection('RoomsDetails').get().then(snapshot => {
+      setLoading(true);
+      setExpenseData([])
+      snapshot.docs.forEach(doc => {
+        console.log(">>>>", doc.data());
+        setExpenseData((prevArr) => [
+          ...prevArr,
+          { expenseId: doc.id,  roomDetails: doc.data() },
+        ]);
+      })
+    }).then(() => {
+      console.log("success");
+      setAllData(expenseData);
+      setLoading(false);
+    })
+      // .then(() => {
+      //   calculateExpense().then(expense_total_amount => setExpenseTotal(expense_total_amount))
+      // })
+      .catch((err) => { console.log(err.message); setLoading(false); })
+  }
+
+  useEffect(() => {
+    fetchDataFromDB();
+  }, [fetchData, user])
 
   return (
     <div className="bg-gray-200 min-h-screen">
@@ -32,7 +99,7 @@ const RentsExpenses = ({ user }) => {
         <div className="flex md:w-max items-center gap-1.5 my-4">
           <p className="text-black font-normal text-xl ml-2">Welcome back,</p>
           <h3 className="whitespace-nowrap text-green-600 font-semibold  text-xl">
-          {user.username}
+            {user.username}
           </h3>
         </div>
 
@@ -76,6 +143,7 @@ const RentsExpenses = ({ user }) => {
               name="room_name"
               id="room_name"
               placeholder="Room Name"
+              value={name} onChange={(e) => setName(e.target.value)}
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
             />
             <input
@@ -83,6 +151,7 @@ const RentsExpenses = ({ user }) => {
               name="room_location"
               id="room_location"
               placeholder="Room Location"
+              value={location} onChange={(e) => setLocation(e.target.value)}
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
             />
             <input
@@ -90,6 +159,7 @@ const RentsExpenses = ({ user }) => {
               name="tenant_name"
               id="tenant_name"
               placeholder="Tenant Name"
+              value={tenantName} onChange={(e) => setTenantName(e.target.value)}
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
             />
             <input
@@ -97,14 +167,16 @@ const RentsExpenses = ({ user }) => {
               name="rent"
               id="rent"
               placeholder="&#8377; Rent Amount"
+              value={rentAmount} onChange={(e) => setRentAmount(e.target.value)}
               className="mt-2 w-full border-2 rounded-3xl placeholder-black p-1 pl-4 outline-none border-gray-400"
             />
 
             <div className="flex flex-col">
               <button
                 type="button"
-                onClick={() => alert("Code required!")}
-                className="mx-auto mt-3 w-full rounded-3xl hover:bg-indigo-800 bg-indigo-600 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap  text-white justify-center"
+                onClick={addNewRoomInDB}
+                disabled={inProcess}
+                className={`${inProcess ? "cursor-not-allowed hover:bg-indigo-400 bg-indigo-400" : "hover:bg-indigo-800 bg-indigo-600"} mx-auto text-center  mt-3 w-full rounded-3xl  font-semibold text-lg py-2 px-3.5 flex items-center justify-center flex-nowrap  text-white justify-center"`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -222,26 +294,31 @@ const RentsExpenses = ({ user }) => {
       </div>
 
       <div className="font-semibold text-lg mx-2 rounded w-max px-4 py-1 mb-2 bg-green-100 text-green-600 border-2 border-green-600">
-        Current Month : {MonthArray[new Date().getMonth()].toString().toUpperCase()} 
+        Current Month : {MonthArray[new Date().getMonth()].toString().toUpperCase()}
       </div>
 
       <div className="grid grid-cols-2  xl:grid-cols-4">
-        <RentExpenseCard />
-        <RentExpenseCard />
-        <RentExpenseCard />
-
-        <RentExpenseCard />
-        <RentExpenseCard />
-        <RentExpenseCard />
-
-        <RentExpenseCard />
-        <RentExpenseCard />
-        <RentExpenseCard />
-
-        <RentExpenseCard />
-        <RentExpenseCard />
-        <RentExpenseCard />
+        {
+          !loading && expenseData.map(function (data, index) {
+            return <RentExpenseCard key={index} data={data} index={index} />
+          })
+        }
       </div>
+      {
+        loading ?
+          <div className="w-full mt-5 flex gap-3 justify-center items-center">
+            <svg role="status" class="w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"></path>
+              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"></path>
+            </svg>
+            <div className="font-bold text-2xl">Loading...</div>
+          </div> : null
+      }
+      {
+        !loading && expenseData.length === 0 && <div className="text-2xl text-center font-bold text-red-600">
+          NO EXPENSE RECORD
+        </div>
+      }
     </div>
   );
 };
