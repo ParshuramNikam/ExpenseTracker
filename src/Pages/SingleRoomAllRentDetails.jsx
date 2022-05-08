@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import SingleRoomExpenseCard from "../components/SingleRoomExpenseCard.jsx";
+import { db } from "../database/firebase.config.js";
 
 const SingleRoomAllRentDetails = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
+  const [roomDetails, setRoomDetails] = useState({});
+  const [roomRentDetails, setRoomRentDetails] = useState({});
+  const { roomId } = useParams();
+
+  const [inputRoomName, setInputRoomName] = useState("");
+  const [inputPaidAmount, setInputPaidAmount] = useState("");
 
   function onCloseModal() {
     setIsOpen(false);
@@ -11,6 +19,20 @@ const SingleRoomAllRentDetails = ({ user }) => {
   function onOpenModal() {
     setIsOpen(true);
   }
+
+  useEffect(() => {
+    db.collection('RoomExpense').doc(roomId).get().then(snapshot => {
+      setRoomRentDetails(snapshot.data())
+    }).then(() => {
+
+      db.collection('RoomsDetails').where('uuid', '==', roomId).get().then(snapshot => {
+        snapshot.docs.forEach(doc => {
+          setRoomDetails(doc.data());
+        })
+      }).catch(err => console.log(err.message))
+
+    }).catch(err => console.log(err.message))
+  }, [])
 
   return (
     <div className="bg-gray-200 min-h-screen">
@@ -34,7 +56,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
 
 
 
-        {!isOpen && (
+        {/* {!isOpen && (
           <div className="mt-2 ">
             <button
               className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
@@ -56,18 +78,18 @@ const SingleRoomAllRentDetails = ({ user }) => {
               <p className="text-base md:text-lg ">Add Rent Entry</p>
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       <div className="font-bold text-xl text-green-900 my-1 flex items-center justify-center gap-x-2">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
         </svg>
-        <div>Room Name : <span>{"Room 1"}</span></div>
+        <div>Room Name : <span>{roomDetails.name}</span></div>
       </div>
 
       {/*  show hide to add new expense */}
-      <div className="flex justify-center  ">
+      {/* <div className="flex justify-center  ">
         <div
           className={`${!isOpen && "hidden"
             } max-w-xl  mb-5 transition delay-150 duration-300 ease-in-out  mx-2`}
@@ -148,7 +170,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
           </form>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex flex-col sm:flex-row">
         <div className="border-2 w-max mx-auto mb-1 sm:mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
@@ -207,12 +229,10 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
           </div>
         </div>
-        </div>
-
-
+      </div>
 
       <div className="">
-        <SingleRoomExpenseCard />
+        <SingleRoomExpenseCard roomDetails={roomDetails} roomRentDetails={roomRentDetails} />
 
       </div>
     </div >

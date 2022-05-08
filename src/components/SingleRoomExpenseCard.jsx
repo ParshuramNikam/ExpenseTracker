@@ -1,22 +1,54 @@
 import React, { useEffect, useState } from "react";
+import { db } from "../database/firebase.config";
+import RoomMonthExpenseCard from "./RoomMonthExpenseCard";
 
 const monthArr = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july', 'aug', 'sept', 'oct', 'nov', 'dec'];
 
-function SingleRoomExpenseCard() {
+function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
   const [month, setMonth] = useState(monthArr[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
-  const [roomName, setRoomName] = useState("Room 1");
-  const [tenantName, setTenantName] = useState("John Doe");
-  const [roomLocation, setRoomLocation] = useState("Khopoli");
-  const [roomRent, setRoomRent] = useState(5000);
+  const [roomName, setRoomName] = useState(roomDetails.name);
+  const [tenantName, setTenantName] = useState(roomDetails.tenantName);
+  const [roomLocation, setRoomLocation] = useState(roomDetails.location);
+  const [roomRent, setRoomRent] = useState(roomDetails.rentAmount);
 
   const [edit, setEdit] = useState(false);
 
+  const changeRoomDetails = (e) => {
+    setEdit(!edit);
+    if (edit) {
+      console.log("updainf........");
+
+      if (!roomName || !roomLocation || !roomRent) {
+        alert("Fields required!")
+        return;
+      }
+
+      db.collection('RoomsDetails').where('uuid', '==', roomDetails.uuid).get().then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+          console.log(doc.id);
+          db.collection('RoomsDetails').doc(doc.id).update({
+            name: roomName,
+            location: roomLocation,
+            rentAmount: roomRent,
+            tenantName: tenantName
+          }).then(() => console.log("updated..."))
+        })
+      }).then(() => {
+        // console.log("updated succesfully!");
+      }).catch(err => console.log(err))
+
+    }
+  }
+
   useEffect(() => {
     setMonth(monthArr[new Date().getMonth()])
-  }, [])
-
+    setRoomLocation(roomDetails.location)
+    setRoomName(roomDetails.name)
+    setRoomRent(roomDetails.rentAmount)
+    setTenantName(roomDetails.tenantName)
+  }, [roomDetails, roomRentDetails])
 
   return (
     <div>
@@ -101,7 +133,7 @@ function SingleRoomExpenseCard() {
                 />
               </div>
               <button className="mt-2 text-center shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
-                onClick={() => setEdit(!edit)}
+                onClick={changeRoomDetails}
               >
                 {edit ? "Update Details" : "Edit Details"}
               </button>
@@ -127,179 +159,11 @@ function SingleRoomExpenseCard() {
       <div className="">
         <div className="sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
 
-          <div className=" flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
-            <div className="w-full">
-              <div className="flex gap-x-2 gap-y-1 justify-between">
-                <h1 className="w-fit px-5 py-2 border-2 border-green-600 text-green-600  bg-green-100 rounded-lg text-base font-semibold">
-                  Paid
-                </h1>
-                <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
-                  &#8377; 5000
-                </div>
-              </div>
-              <div className="mt-2 text-emerald-700 font-semibold">
-                Month : May
-              </div>
-              <div className="block">
-                <div className="mt-2">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer" />
-                    <span className="ml-2">Mark Paid</span>
-                  </label>
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-normal text-gray-700">
-                {" "}
-                <span className="whitespace-nowrap">02 May 2022</span> |{" "}
-                <span className="whitespace-nowrap">04:40 PM</span>
-              </div>
-            </div>
-          </div>
+          {
+            Object.keys(roomRentDetails).map((key, index) =>
+              <RoomMonthExpenseCard key={index} month={key} roomId={roomDetails.uuid} rentDetailOfSingleMonth={roomRentDetails[key]} />
+            )
+          }
 
         </div>
       </div>
