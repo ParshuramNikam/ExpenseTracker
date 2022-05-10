@@ -1,9 +1,13 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import SingleSiteExpenseCard from './SingleSiteExpenseCard';
-
+import { useParams } from "react-router-dom";
+import { db } from "../database/firebase.config.js";
+import BussinessExpenses from './BussinessExpenses';
 
 function SingleSiteExpenseDetails() {
+  const { siteId } = useParams();
     let [isOpen, setIsOpen] = useState(false);
+    const [siteDetails,setSiteDetails] =useState({});
 
     function onCloseModal() {
       setIsOpen(false);
@@ -12,6 +16,20 @@ function SingleSiteExpenseDetails() {
     function onOpenModal() {
       setIsOpen(true);
     }
+
+    useEffect(() => {
+      db.collection('BussinessExpense').doc(siteId).get().then(snapshot => {
+        setSiteDetails(snapshot.data())
+      }).then(() => {
+  
+        db.collection('RoomsDetails').where('uuid', '==', siteId).get().then(snapshot => {
+          snapshot.docs.forEach(doc => {
+            setSiteDetails(doc.data());
+          })
+        }).catch(err => console.log(err.message))
+  
+      }).catch(err => console.log(err.message))
+    }, [])
   
     return (
       <div className="bg-gray-200 min-h-screen">

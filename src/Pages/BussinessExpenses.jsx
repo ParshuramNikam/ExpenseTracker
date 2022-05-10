@@ -1,10 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BussinessExpenseCard from "../components/BussinessExpenseCard";
 import ExpenseCard from "../components/ExpenseCard";
 import PersonalExpenseCard from "../components/PersonalExpenseCard";
+import firebase from "firebase";
+import { db } from "../database/firebase.config";
+import uuidv4 from "../utils/UuidGenerator";
 
 const BussinessExpenses = ({ user }) => {
   let [isOpen, setIsOpen] = useState(false);
+  const [inProcess, setInProcess] = useState(false);
+
+  const [fetchData, setFetchData] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const [allData, setAllData] = useState([]);
+  const [expenseData, setExpenseData] = useState([]);
+  const [expenseTotal, setExpenseTotal] = useState(0);
+
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
 
   function onCloseModal() {
     setIsOpen(false);
@@ -12,6 +26,58 @@ const BussinessExpenses = ({ user }) => {
 
   function onOpenModal() {
     setIsOpen(true);
+  }
+
+  const AddNewSiteInDB = async () => {
+    setInProcess(true);
+    const siteUUID = await uuidv4();
+    db.collection('BussinessDetails').doc().set({
+      addedBy: user.uid,
+      uuid: siteUUID,
+      name: name,
+      location: location,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+      .then(() => {
+        console.log("Document successfully added to personal expense!");
+        setName(""); setLocation("");
+        setIsOpen(false);
+        alert("New Site added succesfully!")
+        setTimeout(() => {
+          setInProcess(false);
+          fetchDataFromDB();
+        }, 1000);
+      })
+      .catch((error) => {
+        setInProcess(false);
+        console.error("Error writing document: ", error);
+      });
+  }
+
+  useEffect(() => {
+    fetchDataFromDB();
+  }, [fetchData, user])
+
+  const fetchDataFromDB = () => {
+    db.collection('BusinessDetails').get().then(snapshot => {
+      setLoading(true);
+      setExpenseData([])
+      snapshot.docs.forEach(doc => {
+        console.log(">>>>", doc.data());
+        setExpenseData((prevArr) => [
+          ...prevArr,
+          { expenseId: doc.id, businessDetails: doc.data() },
+        ]);
+      })
+    }).then(() => {
+      console.log("success");
+      setAllData(expenseData);
+      setLoading(false);
+    })
+      // .then(() => {
+      //   calculateExpense().then(expense_total_amount => setExpenseTotal(expense_total_amount))
+      // })
+      .catch((err) => { console.log(err.message); setLoading(false); })
   }
 
   return (
@@ -68,6 +134,7 @@ const BussinessExpenses = ({ user }) => {
               id="site_name"
               placeholder="Site Name"
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
+              value={name} onChange={(e)=>setName(e.target.value)}
             />
             <input
               type="text"
@@ -75,12 +142,13 @@ const BussinessExpenses = ({ user }) => {
               id="site_location"
               placeholder="Site Location"
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
+              value={location} onChange={(e)=>setLocation(e.target.value)}
             />
 
             <div className="flex flex-col">
               <button
                 type="button"
-                onClick={() => alert("Code required!")}
+                onClick={AddNewSiteInDB}
                 className="mx-auto mt-3 w-full rounded-3xl hover:bg-indigo-800 bg-indigo-600 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap  text-white justify-center"
               >
                 <svg
@@ -158,23 +226,29 @@ const BussinessExpenses = ({ user }) => {
         <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
       </div>
 
-      <div className="grid grid-cols-2  xl:grid-cols-4">
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
-        <BussinessExpenseCard />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
+        {
+          !loading && expenseData.map(function (data, index) {
+            return <BussinessExpenseCard key={index} data={data} index={index} />
+          })
+        }
       </div>
+      {
+        loading ?
+          <div className="w-full mt-5 flex gap-3 justify-center items-center">
+            <svg role="status" class="w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-green-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"></path>
+              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"></path>
+            </svg>
+            <div className="font-bold text-2xl">Loading...</div>
+          </div> : null
+      }
+      {
+        !loading && expenseData.length === 0 && <div className="text-2xl text-center font-bold text-red-600">
+          NO EXPENSE RECORD
+        </div>
+      }
+
     </div>
   );
 };
