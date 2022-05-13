@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const BussinessExpenseCard = ({data,index}) => {
+const BussinessExpenseCard = ({ user, data, index }) => {
   const [paymentStatus, setPaymentStatus] = useState("Paid");
   return (
-    <Link to={'/sites/'+data.businessDetails.uuid} key={index}>
+    <Link to={'/sites/' + data.businessDetails.uuid} key={index}>
       <div className=" border-t-4 border-purple-500 justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
         <div>
           <h1 className="mb-1 text-lg text-purple-500 font-bold">Site : <span className="text-black font-semibold" >{data.businessDetails.name}</span></h1>

@@ -80,9 +80,26 @@ const PersonalExpenses = ({ user }) => {
   }
 
   const setFilteredExpenseInData = async () => {
-    await setExpenseData(
-      allData.filter(data => data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
-    )
+    // await setExpenseData(
+    // allData.filter(data => {
+    //   console.log(data.expenseDetails.date + "   " + `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`);
+    //   return data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`
+    // })
+    // )
+
+    console.log('date', '==', `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`);
+
+    setExpenseData([]);
+
+    db.collection("PersonalExpense")
+      .where("date", "==", `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+      .get().then(snapshot => {
+        console.log();
+        snapshot.docs.forEach(doc => {
+          console.log("???", doc.data());
+          setExpenseData(prevData => [...prevData, { expenseId: doc.id, expenseDetails: doc.data() }])
+        })
+      })
     return true
   }
 

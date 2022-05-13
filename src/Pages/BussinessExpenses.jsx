@@ -31,7 +31,7 @@ const BussinessExpenses = ({ user }) => {
   const AddNewSiteInDB = async () => {
     setInProcess(true);
     const siteUUID = await uuidv4();
-    db.collection('BussinessDetails').doc().set({
+    db.collection('BusinessDetails').doc().set({
       addedBy: user.uid,
       uuid: siteUUID,
       name: name,
@@ -134,7 +134,7 @@ const BussinessExpenses = ({ user }) => {
               id="site_name"
               placeholder="Site Name"
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
-              value={name} onChange={(e)=>setName(e.target.value)}
+              value={name} onChange={(e) => setName(e.target.value)}
             />
             <input
               type="text"
@@ -142,7 +142,7 @@ const BussinessExpenses = ({ user }) => {
               id="site_location"
               placeholder="Site Location"
               className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
-              value={location} onChange={(e)=>setLocation(e.target.value)}
+              value={location} onChange={(e) => setLocation(e.target.value)}
             />
 
             <div className="flex flex-col">
@@ -190,7 +190,7 @@ const BussinessExpenses = ({ user }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
+      {/* <div className="flex flex-col sm:flex-row">
         <div className="border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div className="flex">
             <div>
@@ -220,7 +220,7 @@ const BussinessExpenses = ({ user }) => {
           </div>
         </div>
 
-      </div>
+      </div> */}
 
       <div className="px-4 mb-3">
         <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
@@ -229,7 +229,7 @@ const BussinessExpenses = ({ user }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
         {
           !loading && expenseData.map(function (data, index) {
-            return <BussinessExpenseCard key={index} data={data} index={index} />
+            return <BussinessExpenseCard key={index} user={user} data={data} index={index} />
           })
         }
       </div>

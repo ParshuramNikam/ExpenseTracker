@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { db } from '../database/firebase.config';
 import MonthArray from '../utils/MonthArray'
 
-const RoomMonthExpenseCard = ({ roomId, month, rentDetailOfSingleMonth }) => {
-    const [rentStatus, setRentStatus] = useState(rentDetailOfSingleMonth.rent <= rentDetailOfSingleMonth.paid)
+const RoomMonthExpenseCard = ({ user, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
+    const [rentStatus, setRentStatus] = useState({})
     const [date, setDate] = useState(rentDetailOfSingleMonth.date);
+
+    useEffect(() => {
+        if (rentDetailOfSingleMonth) {
+            setRentStatus(rentDetailOfSingleMonth.rent <= rentDetailOfSingleMonth.paid)
+        }
+    }, [rentDetailOfSingleMonth])
 
     return (
         <div className=" flex border-t-4 border-green-600 md:flex justify-between gap-3 m-2 rounded-md shadow-md bg-white text-gray-700 px-4 py-3">
@@ -18,7 +24,7 @@ const RoomMonthExpenseCard = ({ roomId, month, rentDetailOfSingleMonth }) => {
                     </div>
                 </div>
                 <div className="mt-2 text-emerald-700 font-semibold">
-                    Month : <span className='capitalize'>{MonthArray[parseInt(month.toString().split('-')[0])-1]}</span> 
+                    Month : <span className='capitalize'>{MonthArray[parseInt(month.toString().split('-')[0]) - 1]}</span>
                 </div>
                 <div className="block">
                     <div className="mt-2">
@@ -33,22 +39,27 @@ const RoomMonthExpenseCard = ({ roomId, month, rentDetailOfSingleMonth }) => {
 
                                         db.collection('RoomExpense').doc(roomId).update({
                                             [month]: {
-                                                paid: 8000,
-                                                rent: 8000,
+                                                paid: rentDetailOfSingleMonth.rent,
+                                                rent: rentDetailOfSingleMonth.rent,
                                                 date: new Date().toLocaleDateString().replaceAll('/', '-')
                                             }
                                         })
+
+                                        roomRentDetails[month].paid = rentDetailOfSingleMonth.rent;
 
                                     } else {
                                         setDate(null)
                                         db.collection('RoomExpense').doc(roomId).update({
                                             [month]: {
                                                 paid: 0,
-                                                rent: 8000,
+                                                rent: rentDetailOfSingleMonth.rent,
                                                 date: null
                                             }
                                         })
+
+                                        roomRentDetails[month].paid = 0;
                                     }
+
                                 }}
 
                             />

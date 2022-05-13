@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../database/firebase.config";
+import MonthArray from "../utils/MonthArray";
 import RoomMonthExpenseCard from "./RoomMonthExpenseCard";
 
 const monthArr = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july', 'aug', 'sept', 'oct', 'nov', 'dec'];
 
-function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
+function SingleRoomExpenseCard({ setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
   const [month, setMonth] = useState(monthArr[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -42,6 +43,19 @@ function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
     }
   }
 
+  const getMonthNumber = (inputMonth) => {
+    if (MonthArray.indexOf(inputMonth) + 1 < 10) {
+      const no = MonthArray.indexOf(inputMonth) + 1;
+      return '0' + no;
+    } else {
+      return MonthArray.indexOf(inputMonth) + 1;
+    }
+  }
+
+  const applyFilter = () => {
+    console.log(roomRentDetails[`${getMonthNumber(month)}-${year}`]);
+  }
+
   useEffect(() => {
     setMonth(monthArr[new Date().getMonth()])
     setRoomLocation(roomDetails.location)
@@ -62,7 +76,9 @@ function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
                 </svg>
                 Apply filter :
               </div>
-              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg">
+              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
+                onClick={applyFilter}
+              >
                 Search
               </button>
             </div>
@@ -147,7 +163,9 @@ function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
       </div>
 
       <div className="flex justify-center mb-2">
-        <button className="flex justify-center items-center gap-x-2 gap-y-1 text-center shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-5 py-3 rounded-lg">
+        <button className="flex justify-center items-center gap-x-2 gap-y-1 text-center shadow-lg md:w-auto md:mx-0  bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-5 py-3 rounded-lg"
+          onClick={calculateRoomRentStatus}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
           </svg>
@@ -161,7 +179,7 @@ function SingleRoomExpenseCard({ roomRentDetails, roomDetails }) {
 
           {
             Object.keys(roomRentDetails).map((key, index) =>
-              <RoomMonthExpenseCard key={index} month={key} roomId={roomDetails.uuid} rentDetailOfSingleMonth={roomRentDetails[key]} />
+              <RoomMonthExpenseCard key={index} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} rentDetailOfSingleMonth={roomRentDetails[key]} />
             )
           }
 

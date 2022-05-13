@@ -1,20 +1,65 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import SiteDetails from "../components/SiteDetails";
+import { db } from "../database/firebase.config";
 import MonthArray from "../utils/MonthArray";
 
-const SingleSiteExpenseCard = () => {
-  const [month, setMonth] = useState(MonthArray[new Date().getMonth()]);
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [day, setDay] = useState(new Date().getDay()+1);
+const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYear, day, setDay, loading, setLoading, user, refreshData, siteDetails, setSiteDetails, allExpenseDetails, setAllExpenseDetails, setExpenseDetails, expenseDetails }) => {
 
-  const [siteName, setSiteName] = useState("Room 1");
-  const [siteLocation, setSiteLocation] = useState("Khopoli");
+
+  const [siteName, setSiteName] = useState(siteDetails.name);
+  const [siteLocation, setSiteLocation] = useState(siteDetails.location);
 
   const [edit, setEdit] = useState(false);
 
+  const { siteId } = useParams();
+
+  const updateSiteDetails = () => {
+    setEdit(!edit)
+    console.log(siteId);
+
+    db.collection('BusinessDetails').doc(siteDetails.docId).update({
+      name: siteName,
+      location: siteLocation
+    }).then(() => {
+      console.log("updated succesfully site details")
+      setSiteDetails({ ...siteDetails, name: siteName, location: siteLocation })
+    }).catch((err) => console.log(err.message))
+  }
+
+  const getAllSitesDetails = () => {
+    setLoading(true);
+    db.collection('BusinessExpense').where("siteId", '==', siteId).get().then(snapshot => {
+      setExpenseDetails([])
+      setAllExpenseDetails([])
+      snapshot.docs.forEach(doc => {
+        console.log(">>>>", doc.data());
+        setExpenseDetails((prevArr) => [
+          ...prevArr,
+          { docId: doc.id, details: doc.data() },
+        ]);
+      })
+
+    }).then(() => {
+      console.log("******************");
+      console.log(expenseDetails);
+      console.log("******************");
+      setLoading(false);
+      setAllExpenseDetails(expenseDetails)
+    }).catch(err => {
+      console.log(err.message);
+      setLoading(false)
+    })
+  }
+
   useEffect(() => {
-    setMonth(MonthArray[new Date().getMonth()]);
-  }, []);
+
+    setSiteName(siteDetails.name);
+    setSiteLocation(siteDetails.location);
+
+    getAllSitesDetails();
+
+  }, [siteId, refreshData, siteDetails]);
 
   return (
     <div>
@@ -39,25 +84,27 @@ const SingleSiteExpenseCard = () => {
                 </svg>
                 Apply filter :
               </div>
-              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg">
+              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
+                onClick={fetchDataByFilter}
+              >
                 Search
               </button>
             </div>
             <div className="mb-2">
-            <div className="mb-2">
-              <label className="font-semibold mr-2" htmlFor="day">
-                Choose Day:
-              </label>
-              <input
-                type="number"
-                name="day"
-                id="day"
-                placeholder="Enter Day"
-                className="p-1 ml-5 border-2 rounded text-gray-800 border-gray-800"
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-              />
-            </div>
+              <div className="mb-2">
+                <label className="font-semibold mr-2" htmlFor="day">
+                  Choose Day:
+                </label>
+                <input
+                  type="number"
+                  name="day"
+                  id="day"
+                  placeholder="Enter Day"
+                  className="p-1 ml-5 border-2 rounded text-gray-800 border-gray-800"
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                />
+              </div>
               <label htmlFor="month" className="font-semibold mr-2">
                 Choose month:
               </label>
@@ -120,7 +167,7 @@ const SingleSiteExpenseCard = () => {
                 onChange={(e) => setYear(e.target.value)}
               />
             </div>
-           
+
           </div>
 
           {/* Room details : */}
@@ -134,14 +181,13 @@ const SingleSiteExpenseCard = () => {
                   name="site_name"
                   id="site_name"
                   disabled={!edit}
-                  className={`mx-1 ${
-                    edit ? "border-2 border-gray-700" : "text-center"
-                  } text-gray-900 p-0.5 rounded`}
+                  className={`mx-1 ${edit ? "border-2 border-gray-700" : "text-center"
+                    } text-gray-900 p-0.5 rounded`}
                   value={siteName}
                   onChange={(e) => setSiteName(e.target.value)}
                 />
               </div>
-            
+
               <div className="mb-1">
                 Site location:
                 {/* <span className="font-normal">{"Khopoli"}</span> */}
@@ -150,16 +196,15 @@ const SingleSiteExpenseCard = () => {
                   name="site_location"
                   id="site_location"
                   disabled={!edit}
-                  className={`mx-1 ${
-                    edit ? "border-2 border-gray-700" : "text-center"
-                  } text-gray-900 p-0.5 rounded`}
+                  className={`mx-1 ${edit ? "border-2 border-gray-700" : "text-center"
+                    } text-gray-900 p-0.5 rounded`}
                   value={siteLocation}
                   onChange={(e) => setSiteLocation(e.target.value)}
                 />
               </div>
               <button
                 className="mt-2 text-center shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
-                onClick={() => setEdit(!edit)}
+                onClick={updateSiteDetails}
               >
                 {edit ? "Update Details" : "Edit Details"}
               </button>
@@ -173,7 +218,9 @@ const SingleSiteExpenseCard = () => {
       </div>
 
       <div className="flex justify-center mb-2">
-        <button className="flex justify-center items-center gap-x-2 gap-y-1 text-center shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-5 py-3 rounded-lg">
+        <button className="flex justify-center items-center gap-x-2 gap-y-1 text-center shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-5 py-3 rounded-lg"
+          onClick={getAllSitesDetails}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -193,18 +240,28 @@ const SingleSiteExpenseCard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          <SiteDetails />
-          <SiteDetails />
-          <SiteDetails />
-          
-          <SiteDetails />
-          <SiteDetails />
-          <SiteDetails />
-          
-         
+        {
+          !loading && expenseDetails.map((data, index) =>
+            <SiteDetails key={index} data={data} />
 
-          
+          )
+        }
+      </div>
+      {
+        loading ?
+          <div className="w-full mt-5 flex gap-3 justify-center items-center">
+            <svg role="status" class="w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"></path>
+              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"></path>
+            </svg>
+            <div className="font-bold text-2xl">Loading...</div>
+          </div> : null
+      }
+      {
+        !loading && expenseDetails.length === 0 && <div className="text-2xl text-center font-bold text-red-600">
+          NO EXPENSE RECORD
         </div>
+      }
     </div>
   );
 };

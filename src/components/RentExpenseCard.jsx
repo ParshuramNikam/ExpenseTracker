@@ -9,7 +9,7 @@ const RentExpenseCard = ({ index, data }) => {
   useEffect(() => {
     db.collection('RoomExpense').get().then(snapshot => {
       snapshot.docs.forEach(doc => {
-        console.log(doc.data());
+        console.log(doc.data()); 
       })
     })
 

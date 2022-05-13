@@ -35,7 +35,44 @@ const RentsExpenses = ({ user }) => {
   const addMonthsForEachRoom = (e) => {
     const ans = prompt("Are you sure? Do you want to add Rooms. Type 'yes' if you want to add");
     if (ans && ans.toLowerCase().replace(/ /g, '') === 'yes') {
-      alert("Do code here!")
+      let monthNo = prompt("Enter month number (1-12)");
+      let year = prompt("Enter year number. For ex: 2022");
+
+      if (monthNo && year) {
+        if (monthNo - 1 < 10) {
+          monthNo = '0' + monthNo;
+        }
+        db.collection('RoomExpense').get().then(snapshot => {
+          // console.log(snapshot.docs[0].data());
+          snapshot.docs.forEach(async doc => {
+
+            console.log(MonthArray[monthNo - 1] + "  " + doc.id);
+
+            let roomRentAmount = undefined;
+
+            await db.collection('RoomsDetails').where('uuid', '==', doc.id).get().then(snapshot2 => {
+              snapshot2.docs.forEach(doc => {
+                roomRentAmount = doc.data().rentAmount;
+              })
+            }).then(async () => {
+
+              await db.collection('RoomExpense').doc(doc.id).update({
+                ...doc.data(),
+                [monthNo + '-' + year]: {
+                  paid: 0,
+                  rent: roomRentAmount
+                }
+              }).then(() => {
+                console.log(doc.id + " month added succesfully!");
+              })
+
+            })
+
+
+
+          })
+        })
+      }
     }
   }
 
@@ -84,7 +121,6 @@ const RentsExpenses = ({ user }) => {
       setLoading(true);
       setExpenseData([])
       snapshot.docs.forEach(doc => {
-        console.log(">>>>", doc.data());
         setExpenseData((prevArr) => [
           ...prevArr,
           { expenseId: doc.id, roomDetails: doc.data() },
@@ -232,7 +268,7 @@ const RentsExpenses = ({ user }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
+      {/* <div className="flex flex-col sm:flex-row">
         <div className="border-2 w-max mx-auto mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div className="flex">
             <div>
@@ -289,11 +325,8 @@ const RentsExpenses = ({ user }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="px-4 mb-3">
-        <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
-      </div>
 
       <div className="flex justify-center mb-2 mx-2">
         <button className="flex gap-2 justify-center items-center  text-lg bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md"
@@ -306,6 +339,10 @@ const RentsExpenses = ({ user }) => {
             Add new month entries for each room
           </div>
         </button>
+      </div>
+
+      <div className="px-4 mb-3">
+        <div className="border-b mb-2 border-b-gray-500 h-0 "></div>
       </div>
 
       <div className="font-semibold text-lg mx-2 rounded w-max px-4 py-1 mb-2 bg-green-100 text-green-600 border-2 border-green-600">

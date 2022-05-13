@@ -12,6 +12,9 @@ const SingleRoomAllRentDetails = ({ user }) => {
   const [inputRoomName, setInputRoomName] = useState("");
   const [inputPaidAmount, setInputPaidAmount] = useState("");
 
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [unpaidAmount, setUnpaidAmount] = useState(0);
+
   function onCloseModal() {
     setIsOpen(false);
   }
@@ -20,19 +23,46 @@ const SingleRoomAllRentDetails = ({ user }) => {
     setIsOpen(true);
   }
 
-  useEffect(() => {
+  const calculateRoomRentStatus = async () => {
+    setPaidAmount(0); setUnpaidAmount(0);
+    setTimeout(() => {
+      Object.keys(roomRentDetails).map(key => {
+        if (roomRentDetails[key].paid === roomRentDetails[key].rent) {
+          console.log("===");
+          setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(roomRentDetails[key].paid))
+        } else if (parseInt(roomRentDetails[key].paid) === 0) {
+          console.log("else");
+          setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + roomRentDetails[key].rent)
+        }
+        // else if (parseInt(roomRentDetails[key].paid) <= parseInt(roomRentDetails[key].rent)) {
+        //   console.log("<=");
+        //   setPaidAmount(paidAmount + parseInt(roomRentDetails[key].paid));
+        //   setUnpaidAmount(unpaidAmount + (parseInt(roomRentDetails[key].rent) - parseInt(roomRentDetails[key].paid)))
+        // }
+      })
+    }, 1500);
+  }
+
+  const getAllTimeRoomRentDetails = () => {
+    // to get months rents details & roomId and RoomExpense Doc having same values
     db.collection('RoomExpense').doc(roomId).get().then(snapshot => {
       setRoomRentDetails(snapshot.data())
+    }).catch(err => console.log(err))
+  }
+
+  useEffect(() => {
+    // to get room details
+    db.collection('RoomsDetails').get().then(snapshot => {
+      console.log(roomId);
+      snapshot.docs.forEach(doc => {
+        if (doc.data()['uuid'] === roomId) {
+          setRoomDetails({ docId: doc.id, ...doc.data() });
+        }
+      })
     }).then(() => {
-
-      db.collection('RoomsDetails').where('uuid', '==', roomId).get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-          setRoomDetails(doc.data());
-        })
-      }).catch(err => console.log(err.message))
-
+      getAllTimeRoomRentDetails();
     }).catch(err => console.log(err.message))
-  }, [])
+  }, [roomId])
 
   return (
     <div className="bg-gray-200 min-h-screen">
@@ -53,32 +83,6 @@ const SingleRoomAllRentDetails = ({ user }) => {
             Jhon Doe
           </h3>
         </div>
-
-
-
-        {/* {!isOpen && (
-          <div className="mt-2 ">
-            <button
-              className='shadow-lg md:w-auto mx-auto md:mx-0 flex justify-center items-center gap-1 bg-green-600 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100" text-white px-4 py-4 md:py-2 rounded-lg'
-              onClick={onOpenModal}
-              type="button"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 mr-2 "
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <p className="text-base md:text-lg ">Add Rent Entry</p>
-            </button>
-          </div>
-        )} */}
       </div>
 
       <div className="font-bold text-xl text-green-900 my-1 flex items-center justify-center gap-x-2">
@@ -88,91 +92,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
         <div>Room Name : <span>{roomDetails.name}</span></div>
       </div>
 
-      {/*  show hide to add new expense */}
-      {/* <div className="flex justify-center  ">
-        <div
-          className={`${!isOpen && "hidden"
-            } max-w-xl  mb-5 transition delay-150 duration-300 ease-in-out  mx-2`}
-        >
-          <form className=" bg-gray-100 rounded mt-1 p-2">
-            <h3 className="text-center text-xl text-black font-semibold">
-              ADD ROOM DETAILS
-            </h3>
-            <input
-              type="text"
-              name="room_name"
-              id="room_name"
-              placeholder="Room Name"
-              className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
-            />
-            <input
-              type="text"
-              name="room_location"
-              id="room_location"
-              placeholder="Room Location"
-              className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
-            />
-            <input
-              type="text"
-              name="tenant_name"
-              id="tenant_name"
-              placeholder="Tenant Name"
-              className="mt-4 w-full border-2 rounded-3xl p-1 pl-4 outline-none placeholder-black  border-gray-400"
-            />
-            <input
-              type="number"
-              name="rent"
-              id="rent"
-              placeholder="&#8377; Rent Amount"
-              className="mt-2 w-full border-2 rounded-3xl placeholder-black p-1 pl-4 outline-none border-gray-400"
-            />
-
-            <div className="flex flex-col">
-              <button
-                type="button"
-                onClick={() => alert("Code required!")}
-                className="mx-auto mt-3 w-full rounded-3xl hover:bg-indigo-800 bg-indigo-600 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap  text-white justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                ADD&nbsp;
-              </button>
-
-              <button
-                type="button"
-                onClick={onCloseModal}
-                className="mx-auto mt-3 rounded-3xl w-full hover:bg-red-600 bg-red-500 font-semibold text-lg py-2 px-3.5 flex items-center flex-nowrap  text-white justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7 mr-1"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                CLOSE&nbsp;
-              </button>
-            </div>
-          </form>
-        </div>
-      </div> */}
-
-      <div className="flex flex-col sm:flex-row">
+      {/* <div className="flex flex-col sm:flex-row">
         <div className="border-2 w-max mx-auto mb-1 sm:mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div className="flex">
             <div>
@@ -196,7 +116,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
                 Paid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
-                &#8377; 20,000
+                &#8377; {paidAmount}
               </div>
             </div>
           </div>
@@ -224,15 +144,15 @@ const SingleRoomAllRentDetails = ({ user }) => {
                 Unpaid Rent
               </div>
               <div className="flex self-center text-2xl font-semibold">
-                &#8377; 20,000
+                &#8377; {unpaidAmount}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="">
-        <SingleRoomExpenseCard roomDetails={roomDetails} roomRentDetails={roomRentDetails} />
+        <SingleRoomExpenseCard setRoomRentDetails={setRoomRentDetails} paidAmount={paidAmount} unpaidAmount={unpaidAmount} calculateRoomRentStatus={calculateRoomRentStatus} user={user} roomDetails={roomDetails} roomRentDetails={roomRentDetails} />
 
       </div>
     </div >
