@@ -135,29 +135,36 @@ const PersonalExpenses = ({ user }) => {
 
   const addPersonalExpenseInDB = () => {
     setInProcess(true);
-    db.collection('PersonalExpense').doc().set({
-      addedBy: user.uid,
-      title: title,
-      desc: desc,
-      expenseAmount: parseInt(amount),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      date: date,
-      time: time
-    })
-      .then(() => {
-        console.log("Document successfully added to personal expense!");
-        setTime(""); setDate(""); setAmount(""); setTitle(""); setDesc("");
-        setIsOpen(false);
-        alert("Personal expense added succesfully!")
-        setTimeout(() => {
-          setInProcess(false);
-          fetchDataFromDB();
-        }, 1000);
+
+    if (title && amount && date) {
+      db.collection('PersonalExpense').doc().set({
+        addedBy: user.uid,
+        title: title,
+        desc: desc,
+        expenseAmount: parseInt(amount),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        date: date,
+        time: time
       })
-      .catch((error) => {
-        setInProcess(false);
-        console.error("Error writing document: ", error);
-      });
+        .then(() => {
+          console.log("Document successfully added to personal expense!");
+          setTime(""); setDate(""); setAmount(""); setTitle(""); setDesc("");
+          setIsOpen(false);
+          alert("Personal expense added succesfully!")
+          setTimeout(() => {
+            setInProcess(false);
+            fetchDataFromDB();
+          }, 1000);
+        })
+        .catch((error) => {
+          setInProcess(false);
+          console.error("Error writing document: ", error);
+        });
+      }else{
+      setInProcess(false);
+      alert("Title, Amount, Date required!")
+
+    }
   }
 
   return (
@@ -399,14 +406,14 @@ const PersonalExpenses = ({ user }) => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
             </svg>
-            <div>Get All Time Rent Details</div>
+            <div>Get All Time Expense Details</div>
           </button>
         </div>
 
         <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 pb-5">
           {
             !loading && expenseData.map(function (data, index) {
-              return <PersonalExpenseCard key={index} data={data} index={index} />
+              return <PersonalExpenseCard key={index} fetchDataFromDB={fetchDataFromDB} data={data} index={index} />
             })
           }
         </div>

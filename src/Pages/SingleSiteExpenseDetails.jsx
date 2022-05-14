@@ -358,7 +358,7 @@ function SingleSiteExpenseDetails({ user }) {
 
 
       <div className="">
-        <SingleSiteExpenseCard fetchDataByFilter={fetchDataByFilter} month={month} setMonth={setMonth} year={year} setYear={setYear} day={day} setDay={setDay} setLoading={setLoading} loading={loading} allExpenseDetails={allExpenseDetails} setAllExpenseDetails={setAllExpenseDetails} setExpenseDetails={setExpenseDetails} expenseDetails={expenseDetails} refreshData={refreshData} user={user} siteId={siteId} siteDetails={siteDetails} setSiteDetails={setSiteDetails} />
+        <SingleSiteExpenseCard getAllSitesDetails={getAllSitesDetails} fetchDataByFilter={fetchDataByFilter} month={month} setMonth={setMonth} year={year} setYear={setYear} day={day} setDay={setDay} setLoading={setLoading} loading={loading} allExpenseDetails={allExpenseDetails} setAllExpenseDetails={setAllExpenseDetails} setExpenseDetails={setExpenseDetails} expenseDetails={expenseDetails} refreshData={refreshData} user={user} siteId={siteId} siteDetails={siteDetails} setSiteDetails={setSiteDetails} />
       </div>
 
     </div >

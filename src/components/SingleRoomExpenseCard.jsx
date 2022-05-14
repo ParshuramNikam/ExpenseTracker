@@ -5,7 +5,7 @@ import RoomMonthExpenseCard from "./RoomMonthExpenseCard";
 
 const monthArr = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july', 'aug', 'sept', 'oct', 'nov', 'dec'];
 
-function SingleRoomExpenseCard({ setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
+function SingleRoomExpenseCard({getAllTimeRoomRentDetails, setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
   const [month, setMonth] = useState(monthArr[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -67,8 +67,9 @@ function SingleRoomExpenseCard({ setRoomRentDetails, roomRentDetails, roomDetail
   return (
     <div>
       <div className="mx-2">
-        <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2 grid grid-cols-1 md:grid-cols-2">
-          <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
+        <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2">
+
+          {/* <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
             <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
               <div className="flex items-center text-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -110,7 +111,7 @@ function SingleRoomExpenseCard({ setRoomRentDetails, roomRentDetails, roomDetail
                 value={year} onChange={(e) => setYear(e.target.value)}
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Room details : */}
           <div className="flex text-center justify-center items-center font-semibold mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
@@ -179,7 +180,7 @@ function SingleRoomExpenseCard({ setRoomRentDetails, roomRentDetails, roomDetail
 
           {
             Object.keys(roomRentDetails).map((key, index) =>
-              <RoomMonthExpenseCard key={index} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} rentDetailOfSingleMonth={roomRentDetails[key]} />
+              <RoomMonthExpenseCard key={index} getAllTimeRoomRentDetails={getAllTimeRoomRentDetails} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} rentDetailOfSingleMonth={roomRentDetails[key]} />
             )
           }
 

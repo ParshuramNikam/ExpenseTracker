@@ -152,7 +152,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
       </div> */}
 
       <div className="">
-        <SingleRoomExpenseCard setRoomRentDetails={setRoomRentDetails} paidAmount={paidAmount} unpaidAmount={unpaidAmount} calculateRoomRentStatus={calculateRoomRentStatus} user={user} roomDetails={roomDetails} roomRentDetails={roomRentDetails} />
+        <SingleRoomExpenseCard getAllTimeRoomRentDetails={getAllTimeRoomRentDetails} setRoomRentDetails={setRoomRentDetails} paidAmount={paidAmount} unpaidAmount={unpaidAmount} calculateRoomRentStatus={calculateRoomRentStatus} user={user} roomDetails={roomDetails} roomRentDetails={roomRentDetails} />
 
       </div>
     </div >

@@ -1,10 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { db } from '../database/firebase.config';
 import MonthArray from '../utils/MonthArray'
+import firebase from 'firebase';
 
-const RoomMonthExpenseCard = ({ user, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
+const RoomMonthExpenseCard = ({ user,getAllTimeRoomRentDetails, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
     const [rentStatus, setRentStatus] = useState({})
     const [date, setDate] = useState(rentDetailOfSingleMonth.date);
+
+    const deleteDocFromDB = async () => {
+        const ans = prompt("Are you sure! Do ypu want to delete - type 'yes'");
+        if (ans.toLowerCase() === 'yes') {
+            db.collection('RoomExpense').doc(roomId).set({
+                [month]: firebase.firestore.FieldValue.delete()
+            }, { merge: true })
+                .then(() => {
+                    console.log("doc delete succesfully!");
+                    getAllTimeRoomRentDetails();
+                })
+                .catch(err => {
+                    console.log(err.message);
+                })
+        } else {
+            console.log("not deleted doc");
+        }
+    }
 
     useEffect(() => {
         if (rentDetailOfSingleMonth) {
@@ -67,9 +86,25 @@ const RoomMonthExpenseCard = ({ user, roomId, month, rentDetailOfSingleMonth, ro
                         </label>
                     </div>
                 </div>
-                <div className="mt-2 text-sm font-normal text-gray-700">
-                    {" "}
-                    <span className="whitespace-nowrap">{date ? date : "NA"}</span>
+                <div className="flex justify-between items-center">
+                    <div className="mt-2 text-sm font-normal text-gray-700">
+                        {" "}
+                        <span className="whitespace-nowrap">{date ? date : "NA"}</span>
+                    </div>
+                    <div>
+                        <button className="float-right flex justify-center items-center gap-1.5 w-max bg-red-500 text-white rounded-md mt-1.5 px-4 py-2"
+                            onClick={deleteDocFromDB}
+                        >
+                            <div>
+                                Delete
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -229,7 +229,7 @@ const BussinessExpenses = ({ user }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
         {
           !loading && expenseData.map(function (data, index) {
-            return <BussinessExpenseCard key={index} user={user} data={data} index={index} />
+            return <BussinessExpenseCard key={index} fetchDataFromDB={fetchDataFromDB} user={user} data={data} index={index} />
           })
         }
       </div>

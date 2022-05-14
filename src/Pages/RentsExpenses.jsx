@@ -352,7 +352,7 @@ const RentsExpenses = ({ user }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4">
         {
           !loading && expenseData.map(function (data, index) {
-            return <RentExpenseCard key={index} data={data} index={index} />
+            return <RentExpenseCard key={index} fetchDataFromDB={fetchDataFromDB} data={data} index={index} />
           })
         }
       </div>

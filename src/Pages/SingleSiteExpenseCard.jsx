@@ -242,7 +242,7 @@ const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYe
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {
           !loading && expenseDetails.map((data, index) =>
-            <SiteDetails key={index} data={data} />
+            <SiteDetails getAllSitesDetails={getAllSitesDetails} key={index} data={data} />
 
           )
         }
