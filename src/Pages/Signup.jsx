@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../database/firebase.config.js";
 
-const Signup = () => {
+const Signup = ({ setIsUserLoggedIn }) => {
 
     const [loading, setLoading] = useState(false);
 
@@ -34,9 +34,10 @@ const Signup = () => {
             }).then(() => {
                 auth.signOut().then(() => {
                     console.log("Signout Successful");
+                    setIsUserLoggedIn(false)
                 }).then(() => {
                     console.log("Done.... User registred succesfully");
-                    alert("Signup succesful! & Logout succesful");
+                    console.log("Signup succesful! & Logout succesful");
                 }).catch((error) => {
                     console.log(error.message);
                 });

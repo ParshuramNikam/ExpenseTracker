@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../database/firebase.config";
 
-const Login = () => {
+const Login = ({ setIsUserLoggedIn }) => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Login = () => {
                 .then((currentUser) => {
                     alert("login succesfully!");
                     console.log(currentUser);
+                    setIsUserLoggedIn(true);
                     localStorage.setItem('expense-tracker-user-id', currentUser.user.uid)
                     navigate('/')
                 })
