@@ -1,7 +1,6 @@
 {
   "hosting": {
-    "public": "build",
-    "site": "allexpensetracker",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",

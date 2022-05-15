@@ -77,10 +77,9 @@ function SingleSiteExpenseDetails({ user }) {
     db.collection("BusinessExpense")
       .where("date", "==", `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
       .get().then(snapshot => {
-        console.log();
         snapshot.docs.forEach(doc => {
+          console.log("???", doc.data());
           if (doc.data().siteId === siteId) {
-            console.log("???", doc.data());
             setExpenseDetails(prevData => [...prevData, { docId: doc.id, details: doc.data() }])
           }
         })
@@ -110,24 +109,28 @@ function SingleSiteExpenseDetails({ user }) {
   }
 
   const addExpenseInSite = async () => {
-    await db.collection('BusinessExpense').doc().set({
-      addedBy: user.uid,
-      siteId: siteId,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      expenseAmount: parseInt(amount),
-      title: title,
-      desc: desc,
-      timestamp: `${date} | ${time}`,
-      date: date,
-      timr: time
-    }).then(() => {
-      console.log("Expense added sucesfully!");
-      setTime(""); setDate(""); setTitle(""); setDesc(""); setAmount("");
-      setIsOpen(false);
-      setRefreshData(!refreshData);
-    }).catch(err => {
-      console.log(err.message);
-    })
+    if (title && amount && date) {
+      await db.collection('BusinessExpense').doc().set({
+        addedBy: user.uid,
+        siteId: siteId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        expenseAmount: parseInt(amount),
+        title: title,
+        desc: desc,
+        timestamp: `${date} | ${time}`,
+        date: date,
+        timr: time
+      }).then(() => {
+        console.log("Expense added sucesfully!");
+        setTime(""); setDate(""); setTitle(""); setDesc(""); setAmount("");
+        setIsOpen(false);
+        setRefreshData(!refreshData);
+      }).catch(err => {
+        console.log(err.message);
+      })
+    } else {
+      alert("Title, amount, date these fields required!")
+    }
   }
 
   const getAllSitesDetails = () => {

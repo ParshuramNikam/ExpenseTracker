@@ -96,8 +96,10 @@ const PersonalExpenses = ({ user }) => {
       .get().then(snapshot => {
         console.log();
         snapshot.docs.forEach(doc => {
-          console.log("???", doc.data());
-          setExpenseData(prevData => [...prevData, { expenseId: doc.id, expenseDetails: doc.data() }])
+          // console.log(">>>", doc.data());
+          if (doc.data()['addedBy'] === user.uid) {
+            setExpenseData(prevData => [...prevData, { expenseId: doc.id, expenseDetails: doc.data() }])
+          }
         })
       })
     return true
@@ -160,7 +162,7 @@ const PersonalExpenses = ({ user }) => {
           setInProcess(false);
           console.error("Error writing document: ", error);
         });
-      }else{
+    } else {
       setInProcess(false);
       alert("Title, Amount, Date required!")
 
@@ -341,57 +343,59 @@ const PersonalExpenses = ({ user }) => {
           </div>
         </div>
 
-        <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
-          <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
-            <div className="flex items-center text-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-              Apply filter :
+        <div className="mx-2">
+          <div className=" mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
+            <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
+              <div className="flex items-center text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Apply filter :
+              </div>
+              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
+                onClick={fetchDataByFilter}
+              >
+                Search
+              </button>
             </div>
-            <button className="text-right shadow-lg md:w-auto md:mx-0  bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
-              onClick={fetchDataByFilter}
-            >
-              Search
-            </button>
-          </div>
-          <div className="mb-2">
+            <div className="mb-2">
+              <div className="mb-2">
+                <label className="font-semibold mr-2" htmlFor="year" >
+                  Choose Day:
+                </label>
+                <input type="number" name="day" id="day" placeholder="Enter Year"
+                  className="p-1 border-2 rounded text-gray-800 border-gray-800"
+                  value={day} onChange={(e) => setDay(e.target.value)}
+                />
+              </div>
+
+              <label htmlFor="month" className="font-semibold mr-2">Choose month:</label>
+              <select name="month" id="month" className="px-2 py-1 border-2 rounded text-gray-800 border-gray-800 cursor-pointer"
+                value={month} onChange={(e) => setMonth(e.target.value)}
+              >
+                <option value="jan" className="p-1 text-emerald-600">Jan</option>
+                <option value="feb" className="p-1 text-emerald-600">Feb</option>
+                <option value="mar" className="p-1 text-emerald-600">Mar</option>
+                <option value="apr" className="p-1 text-emerald-600">Apr</option>
+                <option value="may" className="p-1 text-emerald-600">May</option>
+                <option value="jun" className="p-1 text-emerald-600">Jun</option>
+                <option value="jul" className="p-1 text-emerald-600">Jul</option>
+                <option value="aug" className="p-1 text-emerald-600">Aug</option>
+                <option value="sep" className="p-1 text-emerald-600">Sep</option>
+                <option value="oct" className="p-1 text-emerald-600">Oct</option>
+                <option value="nov" className="p-1 text-emerald-600">Nov</option>
+                <option value="dec" className="p-1 text-emerald-600">Dec</option>
+              </select>
+            </div>
             <div className="mb-2">
               <label className="font-semibold mr-2" htmlFor="year" >
-                Choose Day:
+                Choose Year:
               </label>
-              <input type="number" name="day" id="day" placeholder="Enter Year"
+              <input type="number" name="year" id="year" placeholder="Enter Year"
                 className="p-1 border-2 rounded text-gray-800 border-gray-800"
-                value={day} onChange={(e) => setDay(e.target.value)}
+                value={year} onChange={(e) => setYear(e.target.value)}
               />
             </div>
-
-            <label htmlFor="month" className="font-semibold mr-2">Choose month:</label>
-            <select name="month" id="month" className="px-2 py-1 border-2 rounded text-gray-800 border-gray-800 cursor-pointer"
-              value={month} onChange={(e) => setMonth(e.target.value)}
-            >
-              <option value="jan" className="p-1 text-emerald-600">Jan</option>
-              <option value="feb" className="p-1 text-emerald-600">Feb</option>
-              <option value="mar" className="p-1 text-emerald-600">Mar</option>
-              <option value="apr" className="p-1 text-emerald-600">Apr</option>
-              <option value="may" className="p-1 text-emerald-600">May</option>
-              <option value="jun" className="p-1 text-emerald-600">Jun</option>
-              <option value="jul" className="p-1 text-emerald-600">Jul</option>
-              <option value="aug" className="p-1 text-emerald-600">Aug</option>
-              <option value="sep" className="p-1 text-emerald-600">Sep</option>
-              <option value="oct" className="p-1 text-emerald-600">Oct</option>
-              <option value="nov" className="p-1 text-emerald-600">Nov</option>
-              <option value="dec" className="p-1 text-emerald-600">Dec</option>
-            </select>
-          </div>
-          <div className="mb-2">
-            <label className="font-semibold mr-2" htmlFor="year" >
-              Choose Year:
-            </label>
-            <input type="number" name="year" id="year" placeholder="Enter Year"
-              className="p-1 border-2 rounded text-gray-800 border-gray-800"
-              value={year} onChange={(e) => setYear(e.target.value)}
-            />
           </div>
         </div>
 

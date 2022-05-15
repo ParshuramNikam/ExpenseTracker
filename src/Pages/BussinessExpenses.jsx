@@ -31,27 +31,32 @@ const BussinessExpenses = ({ user }) => {
   const AddNewSiteInDB = async () => {
     setInProcess(true);
     const siteUUID = await uuidv4();
-    db.collection('BusinessDetails').doc().set({
-      addedBy: user.uid,
-      uuid: siteUUID,
-      name: name,
-      location: location,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    })
-      .then(() => {
-        console.log("Document successfully added to personal expense!");
-        setName(""); setLocation("");
-        setIsOpen(false);
-        alert("New Site added succesfully!")
-        setTimeout(() => {
-          setInProcess(false);
-          fetchDataFromDB();
-        }, 1000);
+    if (siteUUID && name && location) {
+      db.collection('BusinessDetails').doc().set({
+        addedBy: user.uid,
+        uuid: siteUUID,
+        name: name,
+        location: location,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
-      .catch((error) => {
-        setInProcess(false);
-        console.error("Error writing document: ", error);
-      });
+        .then(() => {
+          console.log("Document successfully added to personal expense!");
+          setName(""); setLocation("");
+          setIsOpen(false);
+          alert("New Site added succesfully!")
+          setTimeout(() => {
+            setInProcess(false);
+            fetchDataFromDB();
+          }, 1000);
+        })
+        .catch((error) => {
+          setInProcess(false);
+          console.error("Error writing document: ", error);
+        });
+    }else{
+      setInProcess(false);
+      alert("All fields required!")
+    }
   }
 
   useEffect(() => {

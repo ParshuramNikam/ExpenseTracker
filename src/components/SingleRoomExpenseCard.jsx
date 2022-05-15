@@ -5,7 +5,7 @@ import RoomMonthExpenseCard from "./RoomMonthExpenseCard";
 
 const monthArr = ['jan', 'feb', 'mar', 'apr', 'may', 'june', 'july', 'aug', 'sept', 'oct', 'nov', 'dec'];
 
-function SingleRoomExpenseCard({getAllTimeRoomRentDetails, setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
+function SingleRoomExpenseCard({ getAllTimeRoomRentDetails, setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
   const [month, setMonth] = useState(monthArr[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -23,22 +23,25 @@ function SingleRoomExpenseCard({getAllTimeRoomRentDetails, setRoomRentDetails, r
 
       if (!roomName || !roomLocation || !roomRent) {
         alert("Fields required!")
-        return;
+        setRoomName(roomDetails.name);
+        setRoomRent(roomDetails.rentAmount);
+        setRoomLocation(roomDetails.location);
+        console.log("Room details not updated in DB");
+      } else {
+        db.collection('RoomsDetails').where('uuid', '==', roomDetails.uuid).get().then((snapshot) => {
+          snapshot.docs.forEach(doc => {
+            console.log(doc.id);
+            db.collection('RoomsDetails').doc(doc.id).update({
+              name: roomName,
+              location: roomLocation,
+              rentAmount: roomRent,
+              tenantName: tenantName
+            }).then(() => console.log("updated..."))
+          })
+        }).catch(err => console.log(err))
       }
 
-      db.collection('RoomsDetails').where('uuid', '==', roomDetails.uuid).get().then((snapshot) => {
-        snapshot.docs.forEach(doc => {
-          console.log(doc.id);
-          db.collection('RoomsDetails').doc(doc.id).update({
-            name: roomName,
-            location: roomLocation,
-            rentAmount: roomRent,
-            tenantName: tenantName
-          }).then(() => console.log("updated..."))
-        })
-      }).then(() => {
-        // console.log("updated succesfully!");
-      }).catch(err => console.log(err))
+
 
     }
   }

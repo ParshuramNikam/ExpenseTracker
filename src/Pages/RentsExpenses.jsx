@@ -79,39 +79,44 @@ const RentsExpenses = ({ user }) => {
   const addNewRoomInDB = async () => {
     setInProcess(true);
     const roomUUID = await uuidv4();
-    db.collection('RoomsDetails').doc().set({
-      addedBy: user.uid,
-      uuid: roomUUID,
-      name: name,
-      location: location,
-      tenantName: tenantName,
-      rentAmount: parseInt(rentAmount),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    })
-      .then(() => {
-        console.log("Document successfully added to personal expense!");
-        setName(""); setLocation(""); setTenantName(""); setRentAmount("");
-        setIsOpen(false);
-        alert("New Room added succesfully!")
-        setTimeout(() => {
-          setInProcess(false);
-          fetchDataFromDB();
-        }, 1000);
-      }).then(() => {
-        // create empty room with current month data :-
-        db.collection('RoomExpense').doc(roomUUID).set(
-          {
-            [`${parseInt(new Date().getMonth() + 1) < 10 ? `0${parseInt(new Date().getMonth() + 1)}` : parseInt(new Date().getMonth())}-${new Date().getFullYear()}`]: {
-              rent: parseInt(rentAmount),
-              paid: 0
-            }
-          }
-        ).catch(err => console.log(err.message))
+    if (name && location && tenantName && rentAmount && roomUUID) {
+      db.collection('RoomsDetails').doc().set({
+        addedBy: user.uid,
+        uuid: roomUUID,
+        name: name,
+        location: location,
+        tenantName: tenantName,
+        rentAmount: parseInt(rentAmount),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
-      .catch((error) => {
-        setInProcess(false);
-        console.error("Error writing document: ", error);
-      });
+        .then(() => {
+          console.log("Document successfully added to personal expense!");
+          setName(""); setLocation(""); setTenantName(""); setRentAmount("");
+          setIsOpen(false);
+          alert("New Room added succesfully!")
+          setTimeout(() => {
+            setInProcess(false);
+            fetchDataFromDB();
+          }, 1000);
+        }).then(() => {
+          // create empty room with current month data :-
+          db.collection('RoomExpense').doc(roomUUID).set(
+            {
+              [`${parseInt(new Date().getMonth() + 1) < 10 ? `0${parseInt(new Date().getMonth() + 1)}` : parseInt(new Date().getMonth())}-${new Date().getFullYear()}`]: {
+                rent: parseInt(rentAmount),
+                paid: 0
+              }
+            }
+          ).catch(err => console.log(err.message))
+        })
+        .catch((error) => {
+          setInProcess(false);
+          console.error("Error writing document: ", error);
+        });
+    } else {
+      setInProcess(false);
+      alert("All fields required!")
+    }
 
 
   }
