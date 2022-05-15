@@ -15,6 +15,7 @@ const HomePage = ({ isUserLoggedIn }) => {
     }
 
     return (
+        isUserLoggedIn ?
         <div className=' min-h-screen bg-gray-50 '>
             {
                 isUserLoggedIn && <div className='h-12 mx-2'>
@@ -75,6 +76,7 @@ const HomePage = ({ isUserLoggedIn }) => {
                 </div>
             </div >
         </div>
+        : <h1 className='text-center text-xl font-semibold my-10'>Loading...</h1>
     )
 }
 
