@@ -3,7 +3,7 @@ import { db } from '../database/firebase.config';
 import MonthArray from '../utils/MonthArray'
 import firebase from 'firebase';
 
-const RoomMonthExpenseCard = ({ user,getAllTimeRoomRentDetails, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
+const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
     const [rentStatus, setRentStatus] = useState({})
     const [date, setDate] = useState(rentDetailOfSingleMonth.date);
 
@@ -43,7 +43,8 @@ const RoomMonthExpenseCard = ({ user,getAllTimeRoomRentDetails, roomId, month, r
                     </div>
                 </div>
                 <div className="mt-2 text-emerald-700 font-semibold">
-                    Month : <span className='capitalize'>{MonthArray[parseInt(month.toString().split('-')[0]) - 1]}</span>
+                    Month : <span className='capitalize'>{MonthArray[parseInt(month.toString().split('-')[0]) - 1]}</span> &nbsp; | &nbsp;
+                    Year : <span className='capitalize'>{month.split('-')[1]}</span>
                 </div>
                 <div className="block">
                     <div className="mt-2">
@@ -87,9 +88,9 @@ const RoomMonthExpenseCard = ({ user,getAllTimeRoomRentDetails, roomId, month, r
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <div className="mt-2 text-sm font-normal text-gray-700">
+                    <div className="mt-2 text-sm font-medium text-gray-700">
                         {" "}
-                        <span className="whitespace-nowrap">{date ? date : "NA"}</span>
+                        <span className="whitespace-nowrap">Paid on : {date ? date : "NA"}</span>
                     </div>
                     <div>
                         <button className="float-right flex justify-center items-center gap-1.5 w-max bg-red-500 text-white rounded-md mt-1.5 px-4 py-2"

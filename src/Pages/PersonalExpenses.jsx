@@ -24,6 +24,7 @@ const PersonalExpenses = ({ user }) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
+  const [filterType, setFilterType] = useState("day");
   const [month, setMonth] = useState(monthArray[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [day, setDay] = useState(new Date().getDay() + 1);
@@ -80,28 +81,40 @@ const PersonalExpenses = ({ user }) => {
   }
 
   const setFilteredExpenseInData = async () => {
-    // await setExpenseData(
-    // allData.filter(data => {
-    //   console.log(data.expenseDetails.date + "   " + `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`);
-    //   return data.expenseDetails.date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`
-    // })
-    // )
 
     console.log('date', '==', `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`);
 
     setExpenseData([]);
 
-    db.collection("PersonalExpense")
-      .where("date", "==", `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
-      .get().then(snapshot => {
-        console.log();
-        snapshot.docs.forEach(doc => {
-          // console.log(">>>", doc.data());
-          if (doc.data()['addedBy'] === user.uid) {
-            setExpenseData(prevData => [...prevData, { expenseId: doc.id, expenseDetails: doc.data() }])
+    console.log("Filtering Data ...");
+
+    db.collection('PersonalExpense').where("addedBy", "==", user.uid).get().then(snapshot => {
+      setLoading(true);
+      snapshot.docs.forEach(doc => {
+        if (filterType === "day") {
+          if (doc.data().date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`) {
+            console.log("++++", doc.data());
+            setExpenseData((prevArr) => [
+              ...prevArr,
+              { expenseId: doc.id, expenseDetails: doc.data() },
+            ]);
           }
-        })
+        } else if (filterType === 'month') {
+          if (doc.data().monthYear === year + '-' + getMonthNumber(month)) {
+            console.log("++++", doc.data());
+            setExpenseData((prevArr) => [
+              ...prevArr,
+              { expenseId: doc.id, expenseDetails: doc.data() },
+            ]);
+          }
+        }
       })
+    }).then(() => {
+      console.log("success");
+      setAllData(expenseData);
+      setLoading(false);
+    }).catch((err) => { console.log(err.message); setLoading(false); })
+
     return true
   }
 
@@ -146,6 +159,7 @@ const PersonalExpenses = ({ user }) => {
         expenseAmount: parseInt(amount),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         date: date,
+        monthYear: date.split("-")[0] + "-" + date.split("-")[1],
         time: time
       })
         .then(() => {
@@ -346,28 +360,43 @@ const PersonalExpenses = ({ user }) => {
         <div className="mx-2">
           <div className=" mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
             <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
-              <div className="flex items-center text-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-                Apply filter :
+              <div className="flex flex-wrap items-center text-lg">
+                <div className="flex items-center whitespace-nowrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  Apply filter : &nbsp;
+                </div>
+
+                <select name="filter_type" id="filter_type"
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="w-36 sm:w-36 p-1 border-2 rounded text-gray-800 border-gray-800"
+                >
+                  <option value="day">Day</option>
+                  <option value="month">Month</option>
+                </select>
+
               </div>
-              <button className="text-right shadow-lg md:w-auto md:mx-0  bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
+              <button className="w-full my-1 sm:my-0 text-center sm:w-max sm:text-right shadow-lg md:w-auto md:mx-0  bg-red-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
                 onClick={fetchDataByFilter}
               >
                 Search
               </button>
             </div>
             <div className="mb-2">
-              <div className="mb-2">
-                <label className="font-semibold mr-2" htmlFor="year" >
-                  Choose Day:
-                </label>
-                <input type="number" name="day" id="day" placeholder="Enter Year"
-                  className="p-1 border-2 rounded text-gray-800 border-gray-800"
-                  value={day} onChange={(e) => setDay(e.target.value)}
-                />
-              </div>
+              {
+                filterType === 'day' &&
+                <div className="mb-2">
+                  <label className="font-semibold mr-2" htmlFor="year" >
+                    Choose Day:
+                  </label>
+                  <input type="number" name="day" id="day" placeholder="Enter Year"
+                    className="p-1 border-2 rounded text-gray-800 border-gray-800"
+                    value={day} onChange={(e) => setDay(e.target.value)}
+                  />
+                </div>
+              }
 
               <label htmlFor="month" className="font-semibold mr-2">Choose month:</label>
               <select name="month" id="month" className="px-2 py-1 border-2 rounded text-gray-800 border-gray-800 cursor-pointer"

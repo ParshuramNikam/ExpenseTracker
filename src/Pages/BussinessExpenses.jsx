@@ -53,7 +53,7 @@ const BussinessExpenses = ({ user }) => {
           setInProcess(false);
           console.error("Error writing document: ", error);
         });
-    }else{
+    } else {
       setInProcess(false);
       alert("All fields required!")
     }
@@ -68,11 +68,13 @@ const BussinessExpenses = ({ user }) => {
       setLoading(true);
       setExpenseData([])
       snapshot.docs.forEach(doc => {
-        console.log(">>>>", doc.data());
-        setExpenseData((prevArr) => [
-          ...prevArr,
-          { expenseId: doc.id, businessDetails: doc.data() },
-        ]);
+        // console.log(">><<>><<", doc.data(), "\n", user);
+        if (doc.data().addedBy === user.uid) {
+          setExpenseData((prevArr) => [
+            ...prevArr,
+            { expenseId: doc.id, businessDetails: doc.data() },
+          ]);
+        }
       })
     }).then(() => {
       console.log("success");

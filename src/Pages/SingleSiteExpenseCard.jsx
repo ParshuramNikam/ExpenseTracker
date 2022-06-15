@@ -4,7 +4,9 @@ import SiteDetails from "../components/SiteDetails";
 import { db } from "../database/firebase.config";
 import MonthArray from "../utils/MonthArray";
 
-const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYear, day, setDay, loading, setLoading, user, refreshData, siteDetails, setSiteDetails, allExpenseDetails, setAllExpenseDetails, setExpenseDetails, expenseDetails }) => {
+
+
+const SingleSiteExpenseCard = ({ fetchDataByFilter,filterType,setFilterType,  month, setMonth, year, setYear, day, setDay, loading, setLoading, user, refreshData, siteDetails, setSiteDetails, allExpenseDetails, setAllExpenseDetails, setExpenseDetails, expenseDetails }) => {
 
 
   const [siteName, setSiteName] = useState(siteDetails.name);
@@ -13,6 +15,7 @@ const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYe
   const [edit, setEdit] = useState(false);
 
   const { siteId } = useParams();
+
 
   const updateSiteDetails = () => {
     setEdit(!edit)
@@ -67,22 +70,21 @@ const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYe
         <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2 grid grid-cols-1 md:grid-cols-2">
           <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
             <div className="text-gray-900 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
-              <div className="flex items-center text-lg">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-600 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
+              <div className="flex flex-wrap items-center text-lg">
+                <div className="flex items-center whitespace-nowrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  Apply filter : &nbsp;
+                </div>
+                <select name="filter_type" id="filter_type"
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="w-24 sm:w-36 p-1 border-2 rounded text-gray-800 border-gray-800"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
-                </svg>
-                Apply filter :
+                  <option value="day">Day</option>
+                  <option value="month">Month</option>
+                </select>
               </div>
               <button className="text-right shadow-lg md:w-auto md:mx-0  bg-purple-500 hover:bg-gray-600 transition duration-50 delay-100 hover:delay-100 text-white px-4 py-2 rounded-lg"
                 onClick={fetchDataByFilter}
@@ -91,20 +93,22 @@ const SingleSiteExpenseCard = ({ fetchDataByFilter, month, setMonth, year, setYe
               </button>
             </div>
             <div className="mb-2">
-              <div className="mb-2">
-                <label className="font-semibold mr-2" htmlFor="day">
-                  Choose Day:
-                </label>
-                <input
-                  type="number"
-                  name="day"
-                  id="day"
-                  placeholder="Enter Day"
-                  className="p-1 ml-5 border-2 rounded text-gray-800 border-gray-800"
-                  value={day}
-                  onChange={(e) => setDay(e.target.value)}
-                />
-              </div>
+              {
+                filterType === 'day' && <div className="mb-2">
+                  <label className="font-semibold mr-2" htmlFor="day">
+                    Choose Day:
+                  </label>
+                  <input
+                    type="number"
+                    name="day"
+                    id="day"
+                    placeholder="Enter Day"
+                    className="p-1 ml-5 border-2 rounded text-gray-800 border-gray-800"
+                    value={day}
+                    onChange={(e) => setDay(e.target.value)}
+                  />
+                </div>
+              }
               <label htmlFor="month" className="font-semibold mr-2">
                 Choose month:
               </label>

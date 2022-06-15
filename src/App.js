@@ -18,11 +18,6 @@ import app, { auth, db } from './database/firebase.config';
 import firebase from 'firebase';
 import SingleSiteExpenseDetails from './Pages/SingleSiteExpenseDetails';
 
-/* 
-*  For this Website deployment I have followes this blog:
-*  https://medium.com/swlh/how-to-deploy-a-react-app-with-firebase-hosting-98063c5bf425
-*/
-
 function App() {
 
   const [user, setUser] = useState({

@@ -28,6 +28,8 @@ function SingleSiteExpenseDetails({ user }) {
   const [year, setYear] = useState(new Date().getFullYear());
   const [day, setDay] = useState(new Date().getDay() + 1);
 
+  const [filterType, setFilterType] = useState("day");
+
   function onCloseModal() {
     setIsOpen(false);
   }
@@ -74,17 +76,42 @@ function SingleSiteExpenseDetails({ user }) {
 
     setExpenseDetails([]);
 
-    db.collection("BusinessExpense")
-      .where("date", "==", `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
-      .get().then(snapshot => {
+    // db.collection("BusinessExpense")
+    // .where("date", "==", `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`)
+    // .get().then(snapshot => {
+    //   snapshot.docs.forEach(doc => {
+    //     console.log("???", doc.data());
+    //     if (doc.data().siteId === siteId) {
+    //       setExpenseDetails(prevData => [...prevData, { docId: doc.id, details: doc.data() }])
+    //     }
+    //   })
+    // ).catch(err => console.log(err))
+
+    db.collection('BusinessExpense').where("addedBy", "==", user.uid).get()
+      .then(snapshot => {
         snapshot.docs.forEach(doc => {
-          console.log("???", doc.data());
-          if (doc.data().siteId === siteId) {
-            setExpenseDetails(prevData => [...prevData, { docId: doc.id, details: doc.data() }])
+          if (filterType === "day") {
+            if (doc.data().date === `${year + '-' + getMonthNumber(month) + '-' + formatDay(day)}`) {
+              console.log("++++", doc.data());
+              setExpenseDetails((prevArr) => [
+                ...prevArr,
+                { docId: doc.id, details: doc.data() },
+              ]);
+            }
+          } else if (filterType === 'month') {
+            if (doc.data().monthYear === year + '-' + getMonthNumber(month)) {
+              console.log("++++", doc.data());
+              setExpenseDetails((prevArr) => [
+                ...prevArr,
+                { docId: doc.id, details: doc.data() },
+              ]);
+            }
           }
         })
-      }).catch(err => console.log(err))
+      })
+
     return true
+
   }
 
   const fetchDataByFilter = async () => {
@@ -119,7 +146,8 @@ function SingleSiteExpenseDetails({ user }) {
         desc: desc,
         timestamp: `${date} | ${time}`,
         date: date,
-        timr: time
+        monthYear: date.split("-")[0] + "-" + date.split("-")[1],
+        time: time
       }).then(() => {
         console.log("Expense added sucesfully!");
         setTime(""); setDate(""); setTitle(""); setDesc(""); setAmount("");
@@ -140,14 +168,16 @@ function SingleSiteExpenseDetails({ user }) {
       setAllExpenseDetails([])
       snapshot.docs.forEach(doc => {
         console.log(">>>>", doc.data());
-        setExpenseDetails((prevArr) => [
-          ...prevArr,
-          { docId: doc.id, details: doc.data() },
-        ]);
-        setAllExpenseDetails((prevArr) => [
-          ...prevArr,
-          { docId: doc.id, details: doc.data() },
-        ])
+        if (doc.data().addedBy === user.uid) {
+          setExpenseDetails((prevArr) => [
+            ...prevArr,
+            { docId: doc.id, details: doc.data() },
+          ]);
+          setAllExpenseDetails((prevArr) => [
+            ...prevArr,
+            { docId: doc.id, details: doc.data() },
+          ])
+        }
       })
 
     }).then(() => {
@@ -361,7 +391,7 @@ function SingleSiteExpenseDetails({ user }) {
 
 
       <div className="">
-        <SingleSiteExpenseCard getAllSitesDetails={getAllSitesDetails} fetchDataByFilter={fetchDataByFilter} month={month} setMonth={setMonth} year={year} setYear={setYear} day={day} setDay={setDay} setLoading={setLoading} loading={loading} allExpenseDetails={allExpenseDetails} setAllExpenseDetails={setAllExpenseDetails} setExpenseDetails={setExpenseDetails} expenseDetails={expenseDetails} refreshData={refreshData} user={user} siteId={siteId} siteDetails={siteDetails} setSiteDetails={setSiteDetails} />
+        <SingleSiteExpenseCard filterType={filterType} setFilterType={setFilterType} getAllSitesDetails={getAllSitesDetails} fetchDataByFilter={fetchDataByFilter} month={month} setMonth={setMonth} year={year} setYear={setYear} day={day} setDay={setDay} setLoading={setLoading} loading={loading} allExpenseDetails={allExpenseDetails} setAllExpenseDetails={setAllExpenseDetails} setExpenseDetails={setExpenseDetails} expenseDetails={expenseDetails} refreshData={refreshData} user={user} siteId={siteId} siteDetails={siteDetails} setSiteDetails={setSiteDetails} />
       </div>
 
     </div >
