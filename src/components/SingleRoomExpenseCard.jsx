@@ -75,7 +75,7 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
 
     setShowFilterData({})
 
-    db.collection('RoomExpense').doc(roomId).get().then((snapshot) => {
+    await db.collection('RoomExpense').doc(roomId).get().then((snapshot) => {
       setdoApplyFilter(true);
       // for month and year
       console.log("=> ", snapshot.data()[`${getMonthNumber(month)}-${year}`]);
@@ -92,7 +92,7 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
           if (key.split('-')[1] == year) {
             console.log(key + " under if statement : " + (key.split('-')[1] == year) + " " + (key.split('-')[1] == year ? 'accepted' : 'rejected'));
             setShowFilterData(prevData => {
-              return { ...showFilterData, [key]: snapshot.data()[key] }
+              return { ...prevData, [key]: snapshot.data()[key] }
             })
           }
         }
@@ -127,7 +127,7 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
   return (
     <div>
       <div className="mx-2">
-        <div className="max-w-5xl mx-auto mb-4 mt-3 gap-2">
+        <div className="max-w-5xl md:grid grid-cols-2 h-full mx-auto mb-4 mt-3 gap-2">
 
           <div className="mx-auto w-full sm:max-w-lg border-2 shadow-md border-gray-500 p-3 rounded-xl">
             <div className="text-gray-900 pb-1.5 font-semibold flex justify-between flex-wrap items-center gap-1 border-b border-b-gray-500 w-full p-1 mb-2">
@@ -269,7 +269,14 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
 
           {
             doApplyFilter && Object.keys(showFilterData).length > 0 ?
-              Object.keys(showFilterData).map((key, index) =>
+
+              Object.keys(Object.keys(showFilterData).sort().reduce(
+                (obj, key) => {
+                  obj[key] = showFilterData[key];
+                  return obj;
+                },
+                {}
+              )).map((key, index) =>
                 <RoomMonthExpenseCard key={index} rentDetailOfSingleMonth={showFilterData[key]} getAllTimeRoomRentDetails={getAllTimeRoomRentDetails} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} />
                 // <div>
                 //   {showFilterData[key].date}
@@ -282,7 +289,14 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
 
           {
             !doApplyFilter && Object.keys(roomRentDetails).length > 0 ?
-              Object.keys(roomRentDetails).map((key, index) =>
+
+              Object.keys(Object.keys(roomRentDetails).sort().reduce(
+                (obj, key) => {
+                  obj[key] = roomRentDetails[key];
+                  return obj;
+                },
+                {}
+              )).map((key, index) =>
                 <RoomMonthExpenseCard key={index} rentDetailOfSingleMonth={roomRentDetails[key]} getAllTimeRoomRentDetails={getAllTimeRoomRentDetails} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} />
               ) : calculationMode === 'all' &&
               <div className="text-2xl text-center font-bold text-red-600">

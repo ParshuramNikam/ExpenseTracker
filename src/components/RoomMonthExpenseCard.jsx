@@ -4,8 +4,9 @@ import MonthArray from '../utils/MonthArray'
 import firebase from 'firebase';
 
 const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId, month, rentDetailOfSingleMonth, roomRentDetails }) => {
-    const [rentStatus, setRentStatus] = useState({})
+    const [rentStatus, setRentStatus] = useState(true)
     const [date, setDate] = useState(rentDetailOfSingleMonth.date);
+    const [paidValue, setPaidValue] = useState(null);
 
     const deleteDocFromDB = async () => {
         const ans = prompt("Are you sure! Do ypu want to delete - type 'yes'");
@@ -26,9 +27,9 @@ const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId,
     }
 
     useEffect(() => {
-        if (rentDetailOfSingleMonth) {
-            setRentStatus(rentDetailOfSingleMonth.rent <= rentDetailOfSingleMonth.paid)
-        }
+        // if (rentDetailOfSingleMonth) {
+        //     setRentStatus(rentDetailOfSingleMonth.rent <= rentDetailOfSingleMonth.paid)
+        // }
     }, [rentDetailOfSingleMonth])
 
     return (
@@ -36,7 +37,12 @@ const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId,
             <div className="w-full">
                 <div className="flex gap-x-2 gap-y-1 justify-between">
                     <h1 className={`w-fit px-5 py-2 border-2  ${rentStatus ? 'text-green-600  bg-green-100 border-green-600' : 'text-red-600  bg-red-100 border-red-600'} rounded-lg text-base font-semibold`}>
-                        {rentStatus ? "Paid" : "Unpaid"}
+                        {
+                        // rentStatus
+                            // ? 
+                            "Paid : " + rentDetailOfSingleMonth.paid
+                            // : "Unpaid : " + (rentDetailOfSingleMonth.rent - rentDetailOfSingleMonth.paid)
+                        }
                     </h1>
                     <div className=" mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-3xl whitespace-nowrap text-right my-auto">
                         &#8377; {rentDetailOfSingleMonth.rent}
@@ -48,42 +54,92 @@ const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId,
                 </div>
                 <div className="block">
                     <div className="mt-2">
+                        <input type="number" name="paid_amount" id="paid_amount"
+                            className='mb-1.5 border-2 border-gray-800 p-1 rounded-md' placeholder='Paid amount'
+                            value={paidValue} onChange={(e) => setPaidValue(e.target.value)}
+                        />
+                        <br />
                         <label className="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer"
+                            {/* <input type="checkbox" className="w-5 h-5 rounded-full cursor-pointer"
                                 checked={rentStatus} value={rentStatus}
                                 onChange={(e) => {
-                                    setRentStatus(!rentStatus);
 
-                                    if (e.currentTarget.checked) {
-                                        setDate(new Date().toLocaleDateString().replaceAll('/', '-'))
+                                    if (paidValue) {
+                                        setRentStatus(!rentStatus);
 
-                                        db.collection('RoomExpense').doc(roomId).update({
-                                            [month]: {
-                                                paid: rentDetailOfSingleMonth.rent,
-                                                rent: rentDetailOfSingleMonth.rent,
-                                                date: new Date().toLocaleDateString().replaceAll('/', '-')
-                                            }
-                                        })
+                                        if (e.currentTarget.checked) {
+                                            setDate(new Date().toLocaleDateString().replaceAll('/', '-'))
 
-                                        roomRentDetails[month].paid = rentDetailOfSingleMonth.rent;
+                                            db.collection('RoomExpense').doc(roomId).update({
+                                                [month]: {
+                                                    paid: rentDetailOfSingleMonth.rent,
+                                                    rent: rentDetailOfSingleMonth.rent,
+                                                    date: new Date().toLocaleDateString().replaceAll('/', '-')
+                                                }
+                                            })
 
+                                            roomRentDetails[month].paid = rentDetailOfSingleMonth.rent;
+
+                                        } else {
+                                            setDate(null)
+                                            db.collection('RoomExpense').doc(roomId).update({
+                                                [month]: {
+                                                    paid: 0,
+                                                    rent: rentDetailOfSingleMonth.rent,
+                                                    date: null
+                                                }
+                                            })
+
+                                            roomRentDetails[month].paid = 0;
+                                        }
                                     } else {
-                                        setDate(null)
-                                        db.collection('RoomExpense').doc(roomId).update({
-                                            [month]: {
-                                                paid: 0,
-                                                rent: rentDetailOfSingleMonth.rent,
-                                                date: null
-                                            }
-                                        })
-
-                                        roomRentDetails[month].paid = 0;
+                                        alert("Enter paid amount")
+                                        setRentStatus(false)
                                     }
 
                                 }}
+                            /> */}
+                            {/* <span className="ml-2">Mark {rentStatus ? "unpaid" : "paid"}</span> */}
+                            <button className='bg-gray-700 shadow  border-2 border-gray-700 text-white px-3 p-2 rounded-md'
+                                onClick={() => {
+                                    if (paidValue) {
+                                        // setRentStatus(!rentStatus);
 
-                            />
-                            <span className="ml-2">Mark {rentStatus ? "unpaid" : "paid"}</span>
+                                        // if (e.currentTarget.checked) {
+                                            setDate(new Date().toLocaleDateString().replaceAll('/', '-'))
+
+                                            db.collection('RoomExpense').doc(roomId).update({
+                                                [month]: {
+                                                    paid: parseInt(rentDetailOfSingleMonth.paid) + parseInt(paidValue),
+                                                    rent: rentDetailOfSingleMonth.rent,
+                                                    date: new Date().toLocaleDateString().replaceAll('/', '-')
+                                                }
+                                            }).then(() => {
+                                                setPaidValue(0);
+                                            })
+
+                                            roomRentDetails[month].paid = parseInt(rentDetailOfSingleMonth.paid) + parseInt(paidValue);
+                                            
+
+                                        // } else {
+                                        //     setDate(null)
+                                        //     db.collection('RoomExpense').doc(roomId).update({
+                                        //         [month]: {
+                                        //             paid: 0,
+                                        //             rent: rentDetailOfSingleMonth.rent,
+                                        //             date: null
+                                        //         }
+                                        //     })
+
+                                        //     roomRentDetails[month].paid = 0;
+                                        // }
+                                    } else {
+                                        alert("Enter paid amount")
+                                    }
+                                }}
+                            >
+                                Update paid amount
+                            </button>
                         </label>
                     </div>
                 </div>

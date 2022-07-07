@@ -52,14 +52,14 @@ const RentExpenseCard = ({ fetchDataFromDB, index, data }) => {
         </Link >
         <div className="flex flex-col">
           <div className="flex items-center justify-between  gap-3 sm:gap-5  mb-2 ">
-            <h1
+            {/* <h1
               className={`w-min p-2 px-4 border-2 ${paymentStatus === "Unpaid"
                 ? "text-red-500 border-red-500  bg-red-100"
                 : "text-green-700 border-green-500  bg-green-100"
                 } rounded-lg text-xs sm:text-base font-semibold`}
             >
               {paymentStatus}
-            </h1>
+            </h1> */}
             <div className="flex justify-start text-left mt-2 mr-2 text-gray-800 font-medium md:mt-0 text-2xl sm:text-3xl whitespace-nowrap sm:text-right my-auto">
               &#8377; {data.roomDetails.rentAmount}
             </div>

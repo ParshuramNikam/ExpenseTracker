@@ -31,8 +31,10 @@ const SingleRoomAllRentDetails = ({ user }) => {
 
     setPaidAmount(0); setUnpaidAmount(0);
     setTimeout(() => {
-
+      console.log("paidAmount : "+paidAmount);
+      
       if ( calculationMode === 'filter' ) {
+        // setPaidAmount(0); setUnpaidAmount(0);
         Object.keys(showFilterData).map(key => {
           console.log(key, showFilterData[key]);
           if (showFilterData[key].paid === showFilterData[key].rent) {
@@ -42,10 +44,10 @@ const SingleRoomAllRentDetails = ({ user }) => {
             console.log("else");
             setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + parseInt(showFilterData[key].rent))
           }
-          else if (parseInt(showFilterData[key].paid) <= parseInt(showFilterData[key].rent)) {
-            console.log("<=");
-            setPaidAmount(paidAmount + parseInt(showFilterData[key].paid));
-            setUnpaidAmount(unpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
+          else if (parseInt(showFilterData[key].paid) < parseInt(showFilterData[key].rent)) {
+            console.log("<");
+            setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid));
+            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
           }
         })
       }
@@ -61,12 +63,12 @@ const SingleRoomAllRentDetails = ({ user }) => {
           }
           else if (parseInt(roomRentDetails[key].paid) <= parseInt(roomRentDetails[key].rent)) {
             console.log("<=");
-            setPaidAmount(paidAmount + parseInt(roomRentDetails[key].paid));
-            setUnpaidAmount(unpaidAmount + (parseInt(roomRentDetails[key].rent) - parseInt(roomRentDetails[key].paid)))
+            setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(roomRentDetails[key].paid));
+            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(roomRentDetails[key].rent) - parseInt(roomRentDetails[key].paid)))
           }
         })
       }
-    }, 0);
+    }, 500);
   }
 
   const getAllTimeRoomRentDetails = () => {
@@ -121,7 +123,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
         <div>Room Name : <span>{roomDetails.name}</span></div>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
+      <div className="flex w-max sm:gap-x-3 mx-auto justify-center flex-col sm:flex-row">
         <div className="border-2 w-max mx-auto mb-1 sm:mb-5 flex items-center gap-3 bg-gray-50 m-2 rounded px-6 sm:px-6 p-2.5 border-black">
           <div>
             <div className="flex">
@@ -152,7 +154,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="max-w-max mx-auto mt-1">
               <button className="flex gap-x-2 justify-center items-center bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md"
-                onClick={() => calculateRoomRentStatus()}
+                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus();}}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -192,7 +194,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="max-w-max mx-auto mt-1">
               <button className="flex gap-x-2 justify-center items-center bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md"
-                onClick={() => calculateRoomRentStatus()}
+                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus();}}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

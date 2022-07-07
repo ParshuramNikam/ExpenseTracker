@@ -39,8 +39,9 @@ const RentsExpenses = ({ user }) => {
       let year = prompt("Enter year number. For ex: 2022");
 
       if (monthNo && year) {
-        if (monthNo - 1 < 10) {
+        if (monthNo < 10) {
           monthNo = '0' + monthNo;
+          console.log(">>>" + monthNo);
         }
         db.collection('RoomExpense').get().then(snapshot => {
           // console.log(snapshot.docs[0].data());
@@ -153,10 +154,11 @@ const RentsExpenses = ({ user }) => {
       </h1>
       <div className="m-2 mb-0 md:flex justify-between">
         <div className="flex md:w-max items-center gap-1.5 my-4">
-          <p className="text-black font-normal text-xl ml-2">Welcome back,</p>
-          <h3 className="whitespace-nowrap text-green-600 font-semibold  text-xl">
-            {user.username}
-          </h3>
+          <p className="text-black font-normal text-xl ml-2">Welcome back, 
+            <h3 className="text-green-600 font-semibold  text-xl">
+              {user.username}
+            </h3>
+          </p>
         </div>
 
         {!isOpen && (
