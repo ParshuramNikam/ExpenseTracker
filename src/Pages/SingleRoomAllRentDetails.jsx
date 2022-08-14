@@ -31,12 +31,13 @@ const SingleRoomAllRentDetails = ({ user }) => {
 
     setPaidAmount(0); setUnpaidAmount(0);
     setTimeout(() => {
-      console.log("paidAmount : "+paidAmount);
-      
-      if ( calculationMode === 'filter' ) {
+      console.log("paidAmount : " + paidAmount);
+
+      if (calculationMode === 'filter') {
         // setPaidAmount(0); setUnpaidAmount(0);
         Object.keys(showFilterData).map(key => {
           console.log(key, showFilterData[key]);
+          console.log(showFilterData[key].paid);
           if (showFilterData[key].paid === showFilterData[key].rent) {
             console.log("===");
             setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid))
@@ -44,14 +45,18 @@ const SingleRoomAllRentDetails = ({ user }) => {
             console.log("else");
             setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + parseInt(showFilterData[key].rent))
           }
-          else if (parseInt(showFilterData[key].paid) < parseInt(showFilterData[key].rent)) {
-            console.log("<");
+          else if (parseInt(showFilterData[key].paid) <= parseInt(showFilterData[key].rent)) {
+            console.log("<=");
+            setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid));
+            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
+          } else if (parseInt(showFilterData[key].paid) > parseInt(showFilterData[key].rent)) {
+            console.log("<=");
             setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid));
             setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
           }
         })
       }
-      else if( calculationMode==='all' ){
+      else if (calculationMode === 'all') {
         Object.keys(roomRentDetails).map(key => {
           console.log(key, roomRentDetails[key]);
           if (roomRentDetails[key].paid === roomRentDetails[key].rent) {
@@ -72,9 +77,25 @@ const SingleRoomAllRentDetails = ({ user }) => {
   }
 
   const getAllTimeRoomRentDetails = () => {
+    setRoomRentDetails({});
     // to get months rents details & roomId and RoomExpense Doc having same values
-    db.collection('RoomExpense').doc(roomId).get().then(snapshot => {
-      setRoomRentDetails(snapshot.data());
+    db.collection('RoomExpense').doc(roomId).get().then(async snapshot => {
+      // setRoomRentDetails(snapshot.data());
+
+      // sorting keys as per month-year
+      let sortedKeysArr = await Object.keys(snapshot.data()).sort(function (a, b) {
+        a = a.split("-");
+        b = b.split("-")
+        return new Date(a[1], a[0], 1) - new Date(b[1], b[0], 1)
+      }).map(async key => {
+        await setRoomRentDetails((prevRoomDetails) => {
+          console.log(key, ":", snapshot.data()[key]);
+          return { ...prevRoomDetails, [key]: snapshot.data()[key] }
+        });
+      })
+
+      // return { sortedKeysArr: sortedKeysArr, snapshotData: snapshot.data() }
+
     }).then(() => { console.log("getAllTimeRoomRentDetails fetched sucesfully"); })
       .catch(err => console.log(err))
   }
@@ -154,7 +175,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="max-w-max mx-auto mt-1">
               <button className="flex gap-x-2 justify-center items-center bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md"
-                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus();}}
+                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus(); }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -194,7 +215,7 @@ const SingleRoomAllRentDetails = ({ user }) => {
             </div>
             <div className="max-w-max mx-auto mt-1">
               <button className="flex gap-x-2 justify-center items-center bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded-md"
-                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus();}}
+                onClick={() => { setPaidAmount(0); setUnpaidAmount(0); calculateRoomRentStatus(); }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

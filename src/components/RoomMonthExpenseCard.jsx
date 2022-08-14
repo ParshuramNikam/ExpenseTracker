@@ -7,7 +7,7 @@ const RoomMonthExpenseCard = ({ filter, user, getAllTimeRoomRentDetails, roomId,
     const [rentStatus, setRentStatus] = useState(true)
     const [date, setDate] = useState(rentDetailOfSingleMonth.date);
     const [paidValue, setPaidValue] = useState(null);
-
+ 
     const deleteDocFromDB = async () => {
         const ans = prompt("Are you sure! Do ypu want to delete - type 'yes'");
         if (ans.toLowerCase() === 'yes') {

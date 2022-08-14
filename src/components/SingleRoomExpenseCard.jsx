@@ -5,7 +5,7 @@ import RoomMonthExpenseCard from "./RoomMonthExpenseCard";
 
 const monthArr = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
-function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, showFilterData, setShowFilterData, getAllTimeRoomRentDetails, setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
+function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, showFilterData, setShowFilterData, setRoomRentDetails, roomRentDetails, roomDetails, user, calculateRoomRentStatus, paidAmount, unpaidAmount }) {
   const [month, setMonth] = useState(monthArr[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear());
 
@@ -111,6 +111,35 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
       //     console.log(err);
       //   })
     })
+  }
+
+
+  const getAllTimeRoomRentDetails = () => {
+    setRoomRentDetails({});
+    // to get months rents details & roomId and RoomExpense Doc having same values
+    db.collection('RoomExpense').doc(roomId).get().then(async snapshot => {
+      // setRoomRentDetails(snapshot.data());
+
+      // sorting keys as per month-year
+      const sortKeyArr = await Object.keys(snapshot.data()).sort(async function (a, b) {
+        a = a.split("-");
+        b = b.split("-");
+        return new Date(a[1], a[0], 1) - new Date(b[1], b[0], 1);
+      })
+
+      setTimeout(() => {
+        sortKeyArr.map(async (key) => {
+          await setRoomRentDetails((prevRoomDetails) => {
+            console.log(key, ":", snapshot.data()[key]);
+            return { ...prevRoomDetails, [key]: snapshot.data()[key] };
+          });
+        })
+      }, 2000);
+
+      // return { sortedKeysArr: sortedKeysArr, snapshotData: snapshot.data() }
+
+    }).then(() => { console.log("getAllTimeRoomRentDetails fetched sucesfully"); })
+      .catch(err => console.log(err))
   }
 
 
@@ -290,13 +319,7 @@ function SingleRoomExpenseCard({ calculationMode, setCalculationMode, roomId, sh
           {
             !doApplyFilter && Object.keys(roomRentDetails).length > 0 ?
 
-              Object.keys(Object.keys(roomRentDetails).sort().reduce(
-                (obj, key) => {
-                  obj[key] = roomRentDetails[key];
-                  return obj;
-                },
-                {}
-              )).map((key, index) =>
+              Object.keys(roomRentDetails).map((key, index) =>
                 <RoomMonthExpenseCard key={index} rentDetailOfSingleMonth={roomRentDetails[key]} getAllTimeRoomRentDetails={getAllTimeRoomRentDetails} month={key} user={user} roomId={roomDetails.uuid} roomRentDetails={roomRentDetails} />
               ) : calculationMode === 'all' &&
               <div className="text-2xl text-center font-bold text-red-600">
