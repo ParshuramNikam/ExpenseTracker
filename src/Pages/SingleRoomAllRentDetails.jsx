@@ -50,9 +50,9 @@ const SingleRoomAllRentDetails = ({ user }) => {
             setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid));
             setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
           } else if (parseInt(showFilterData[key].paid) > parseInt(showFilterData[key].rent)) {
-            console.log("<=");
+            console.log(">");
             setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(showFilterData[key].paid));
-            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(showFilterData[key].rent) - parseInt(showFilterData[key].paid)))
+            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount - (parseInt(showFilterData[key].paid) - parseInt(showFilterData[key].rent)))
           }
         })
       }
@@ -70,6 +70,10 @@ const SingleRoomAllRentDetails = ({ user }) => {
             console.log("<=");
             setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(roomRentDetails[key].paid));
             setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount + (parseInt(roomRentDetails[key].rent) - parseInt(roomRentDetails[key].paid)))
+          } else if (parseInt(roomRentDetails[key].paid) > parseInt(roomRentDetails[key].rent)) {
+            console.log(">");
+            setPaidAmount(prevPaidAmount => prevPaidAmount + parseInt(roomRentDetails[key].paid));
+            setUnpaidAmount(prevUnpaidAmount => prevUnpaidAmount - (parseInt(roomRentDetails[key].paid) - parseInt(roomRentDetails[key].rent)))
           }
         })
       }
